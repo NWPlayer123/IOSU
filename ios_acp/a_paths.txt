@@ -1,0 +1,5 @@
+/cygdrive/d/noscan/workspace/213_BUILD/sdk_2_13/system/include/nn/os/os_Thread.h
+/cygdrive/d/noscan/workspace/213_BUILD/sdk_2_13/system/include/nn/os/os_CriticalSection.h
+/cygdrive/d/noscan/workspace/213_BUILD/sdk_2_13/system/include/nn/os/os_SimpleLock.h
+/cygdrive/d/noscan/workspace/213_BUILD/sdk_2_13/system/include/nn/ipc/ipc_MetaServer.h
+/cygdrive/d/noscan/workspace/213_BUILD/sdk_2_13/system/src/iop/include/ums_server_refs.h

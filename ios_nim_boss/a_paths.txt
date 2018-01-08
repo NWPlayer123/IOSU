@@ -1,0 +1,17 @@
+D:/cibuild/nlib/exi/sources/nn/nlib/exi/XmlStreamWriter.cpp
+D:/cibuild/nlib/exi/sources/nn/nlib/exi/core/ExiString.cpp
+D:/cibuild/nlib/exi/sources/nn/nlib/exi/core/XmlExiStreamReader.cpp
+D:/cibuild/nlib/exi/sources/nn/nlib/exi/core/XmlExiStreamWriter.cpp
+D:/cibuild/nlib/exi/sources/nn/nlib/exi/text/XmlTextStreamReader.cpp
+D:/cibuild/nlib/exi/sources/nn/nlib/exi/core/BitByteStreamReader.cpp
+D:/cibuild/nlib/exi/sources/nn/nlib/exi/core/BitByteStreamWriter.cpp
+D:/cibuild/nlib/exi/sources/nn/nlib/exi/core/ExiCoder.cpp
+D:/cibuild/nlib/exi/sources/nn/nlib/exi/core/ExiDecoder.cpp
+D:/cibuild/nlib/exi/sources/nn/nlib/exi/core/ExiEncoder.cpp
+D:/cibuild/nlib/exi/sources/nn/nlib/exi/core/StringDecoder.cpp
+D:/cibuild/nlib/exi/sources/nn/nlib/exi/core/StringEncoder.cpp
+D:/cibuild/nlib/exi/sources/nn/nlib/exi/text/TextDecoder.cpp
+D:/cibuild/nlib/exi/sources/nn/nlib/exi/text/TextEncoder.cpp
+D:/cibuild/nlib/exi/sources/nn/nlib/exi/text/Utf8Writer.cpp
+../sources/nn/nlib/exi/XmlStreamReaderInline.h
+../sources/nn/nlib/exi/core/ExiCoder.h
