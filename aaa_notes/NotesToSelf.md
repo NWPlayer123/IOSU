@@ -1,140 +1,140 @@
-```081419F0 - Undefined Instruction Syscall Table```
+[081419F0 - Undefined Instruction Syscall Table](http://wiiubrew.org/wiki/IOSU_Syscalls)
 
 ```
-IOS_KERNEL:081419F0 off_81419F0     DCD sub_812CA44                 ; DATA XREF: Undefined_Handler+88↑o ...
-IOS_KERNEL:081419F4                 DCD sub_812C8D4
-IOS_KERNEL:081419F8                 DCD sub_812C71C
-IOS_KERNEL:081419FC                 DCD sub_812BA54
-IOS_KERNEL:08141A00                 DCD sub_812BA80
-IOS_KERNEL:08141A04                 DCD sub_812BA8C
-IOS_KERNEL:08141A08                 DCD sub_81258EC
-IOS_KERNEL:08141A0C                 DCD sub_812C5EC
-IOS_KERNEL:08141A10                 DCD sub_812C4F4
-IOS_KERNEL:08141A14                 DCD sub_812C4BC
-IOS_KERNEL:08141A18                 DCD sub_812BAA0
-IOS_KERNEL:08141A1C                 DCD sub_812C398
-IOS_KERNEL:08141A20                 DCD sub_8123E0C
-IOS_KERNEL:08141A24                 DCD sub_812431C
-IOS_KERNEL:08141A28                 DCD sub_81242B4
-IOS_KERNEL:08141A2C                 DCD sub_8124090
-IOS_KERNEL:08141A30                 DCD sub_8123FF4
-IOS_KERNEL:08141A34                 DCD sub_8123D7C
-IOS_KERNEL:08141A38                 DCD sub_8123CF0
-IOS_KERNEL:08141A3C                 DCD sub_812D718
-IOS_KERNEL:08141A40                 DCD sub_812D62C
-IOS_KERNEL:08141A44                 DCD sub_812D598
-IOS_KERNEL:08141A48                 DCD sub_812D490
-IOS_KERNEL:08141A4C                 DCD sub_812A2E8
-IOS_KERNEL:08141A50                 DCD sub_812D254
-IOS_KERNEL:08141A54                 DCD sub_812A5F4
-IOS_KERNEL:08141A58                 DCD sub_812A314
-IOS_KERNEL:08141A5C                 DCD sub_8129970
-IOS_KERNEL:08141A60                 DCD sub_812A554
-IOS_KERNEL:08141A64                 DCD sub_812A508
-IOS_KERNEL:08141A68                 DCD sub_812A458
-IOS_KERNEL:08141A6C                 DCD sub_81298BC
-IOS_KERNEL:08141A70                 DCD sub_8120360
-IOS_KERNEL:08141A74                 DCD sub_8120310
-IOS_KERNEL:08141A78                 DCD sub_8120364
-IOS_KERNEL:08141A7C                 DCD sub_8122CA8
-IOS_KERNEL:08141A80                 DCD sub_8122D84
-IOS_KERNEL:08141A84                 DCD sub_81234EC
-IOS_KERNEL:08141A88                 DCD sub_8122C10
-IOS_KERNEL:08141A8C                 DCD sub_81234E4
-IOS_KERNEL:08141A90                 DCD sub_8123464
-IOS_KERNEL:08141A94                 DCD sub_8123830
-IOS_KERNEL:08141A98                 DCD sub_81237CC
-IOS_KERNEL:08141A9C                 DCD sub_8123894
-IOS_KERNEL:08141AA0                 DCD sub_81286A8
-IOS_KERNEL:08141AA4                 DCD sub_8127F28
-IOS_KERNEL:08141AA8                 DCD sub_8127E84
-IOS_KERNEL:08141AAC                 DCD sub_81261AC
-IOS_KERNEL:08141AB0                 DCD sub_8126278
-IOS_KERNEL:08141AB4                 DCD sub_812583C
-IOS_KERNEL:08141AB8                 DCD sub_8125EDC
-IOS_KERNEL:08141ABC                 DCD sub_812940C
-IOS_KERNEL:08141AC0                 DCD sub_8129368
-IOS_KERNEL:08141AC4                 DCD sub_81292C8
-IOS_KERNEL:08141AC8                 DCD sub_8129228
-IOS_KERNEL:08141ACC                 DCD sub_8129188
-IOS_KERNEL:08141AD0                 DCD sub_81290E0
-IOS_KERNEL:08141AD4                 DCD sub_812903C
-IOS_KERNEL:08141AD8                 DCD sub_8128D2C
-IOS_KERNEL:08141ADC                 DCD sub_8128C20
-IOS_KERNEL:08141AE0                 DCD sub_8128B98
-IOS_KERNEL:08141AE4                 DCD sub_8128B10
-IOS_KERNEL:08141AE8                 DCD sub_81289F0
-IOS_KERNEL:08141AEC                 DCD sub_8128950
-IOS_KERNEL:08141AF0                 DCD sub_81288BC
-IOS_KERNEL:08141AF4                 DCD sub_8128C98
-IOS_KERNEL:08141AF8                 DCD sub_8128A78
-IOS_KERNEL:08141AFC                 DCD sub_8128ED4
-IOS_KERNEL:08141B00                 DCD sub_8128F88
-IOS_KERNEL:08141B04                 DCD sub_8128E20
-IOS_KERNEL:08141B08                 DCD sub_8128794
-IOS_KERNEL:08141B0C                 DCD sub_8128828
-IOS_KERNEL:08141B10                 DCD sub_81286F4
-IOS_KERNEL:08141B14                 DCD sub_8126E4C
-IOS_KERNEL:08141B18                 DCD sub_8125758
-IOS_KERNEL:08141B1C                 DCD sub_81257A8
-IOS_KERNEL:08141B20                 DCD sub_8120068
-IOS_KERNEL:08141B24                 DCD sub_812009C
-IOS_KERNEL:08141B28                 DCD sub_8120034
-IOS_KERNEL:08141B2C                 DCD sub_8120000
-IOS_KERNEL:08141B30                 DCD sub_8120590
-IOS_KERNEL:08141B34                 DCD sub_81201E0
-IOS_KERNEL:08141B38                 DCD sub_8120160
-IOS_KERNEL:08141B3C                 DCD sub_812A0DC
-IOS_KERNEL:08141B40                 DCD sub_812DC4C
-IOS_KERNEL:08141B44                 DCD sub_812DBDC
-IOS_KERNEL:08141B48                 DCD sub_8124484
-IOS_KERNEL:08141B4C                 DCD sub_812B4A8
-IOS_KERNEL:08141B50                 DCD sub_812B654
-IOS_KERNEL:08141B54                 DCD sub_812B6E4
-IOS_KERNEL:08141B58                 DCD sub_812B72C
-IOS_KERNEL:08141B5C                 DCD sub_8120D78
-IOS_KERNEL:08141B60                 DCD sub_8129798
-IOS_KERNEL:08141B64                 DCD sub_8124B50
-IOS_KERNEL:08141B68                 DCD sub_81245C8
-IOS_KERNEL:08141B6C                 DCD sub_8129828
-IOS_KERNEL:08141B70                 DCD sub_8129788
-IOS_KERNEL:08141B74                 DCD sub_812C1E4
-IOS_KERNEL:08141B78                 DCD sub_812CD34
-IOS_KERNEL:08141B7C                 DCD sub_812BB1C
-IOS_KERNEL:08141B80                 DCD sub_812BED4
-IOS_KERNEL:08141B84                 DCD sub_812BC2C
-IOS_KERNEL:08141B88                 DCD sub_8123BD4
-IOS_KERNEL:08141B8C                 DCD sub_8125D34
-IOS_KERNEL:08141B90                 DCD sub_8125B30
-IOS_KERNEL:08141B94                 DCD sub_812D260
-IOS_KERNEL:08141B98                 DCD sub_812B38C
-IOS_KERNEL:08141B9C                 DCD sub_8122E88
-IOS_KERNEL:08141BA0                 DCD sub_81209CC
-IOS_KERNEL:08141BA4                 DCD sub_8129870
-IOS_KERNEL:08141BA8                 DCD sub_8120970
-IOS_KERNEL:08141BAC                 DCD sub_8120988
-IOS_KERNEL:08141BB0                 DCD sub_8120998
-IOS_KERNEL:08141BB4                 DCD sub_81209B8
-IOS_KERNEL:08141BB8                 DCD sub_FFFFDC48
-IOS_KERNEL:08141BBC                 DCD sub_8129CE0
-IOS_KERNEL:08141BC0                 DCD sub_8129760
-IOS_KERNEL:08141BC4                 DCD sub_8129734
-IOS_KERNEL:08141BC8                 DCD sub_812B858
-IOS_KERNEL:08141BCC                 DCD sub_8121D58
-IOS_KERNEL:08141BD0                 DCD sub_8121E34
-IOS_KERNEL:08141BD4                 DCD sub_81299E8
-IOS_KERNEL:08141BD8                 DCD sub_81297D8
-IOS_KERNEL:08141BDC                 DCD sub_8126604
-IOS_KERNEL:08141BE0                 DCD sub_81297E8
-IOS_KERNEL:08141BE4                 DCD sub_8129818
-IOS_KERNEL:08141BE8                 DCD sub_8124518
-IOS_KERNEL:08141BEC                 DCD sub_8129F94
-IOS_KERNEL:08141BF0                 DCD sub_8129C38
-IOS_KERNEL:08141BF4                 DCD sub_812CD2C
-IOS_KERNEL:08141BF8                 DCD sub_8125960
-IOS_KERNEL:08141BFC                 DCD sub_8128430
-IOS_KERNEL:08141C00                 DCD sub_8125800
-IOS_KERNEL:08141C04                 DCD sub_81263F8
-IOS_KERNEL:08141C08                 DCD sub_8121CDC
-IOS_KERNEL:08141C0C                 DCD loc_FFFFDFC8
+IOS_KERNEL:081419F0 off_81419F0     DCD sub_812CA44  0x0                ; DATA XREF: Undefined_Handler+88↑o ...
+IOS_KERNEL:081419F4                 DCD sub_812C8D4  0x1 
+IOS_KERNEL:081419F8                 DCD sub_812C71C  0x2 
+IOS_KERNEL:081419FC                 DCD sub_812BA54  0x3 
+IOS_KERNEL:08141A00                 DCD sub_812BA80  0x4 
+IOS_KERNEL:08141A04                 DCD sub_812BA8C  0x5 
+IOS_KERNEL:08141A08                 DCD sub_81258EC  0x6 
+IOS_KERNEL:08141A0C                 DCD sub_812C5EC  0x7 
+IOS_KERNEL:08141A10                 DCD sub_812C4F4  0x8 
+IOS_KERNEL:08141A14                 DCD sub_812C4BC  0x9 
+IOS_KERNEL:08141A18                 DCD sub_812BAA0  0xA 
+IOS_KERNEL:08141A1C                 DCD sub_812C398  0xB 
+IOS_KERNEL:08141A20                 DCD sub_8123E0C  0xC 
+IOS_KERNEL:08141A24                 DCD sub_812431C  0xD 
+IOS_KERNEL:08141A28                 DCD sub_81242B4  0xE 
+IOS_KERNEL:08141A2C                 DCD sub_8124090  0xF 
+IOS_KERNEL:08141A30                 DCD sub_8123FF4  0x10 
+IOS_KERNEL:08141A34                 DCD sub_8123D7C  0x11 
+IOS_KERNEL:08141A38                 DCD sub_8123CF0  0x12 
+IOS_KERNEL:08141A3C                 DCD sub_812D718  0x13 
+IOS_KERNEL:08141A40                 DCD sub_812D62C  0x14 
+IOS_KERNEL:08141A44                 DCD sub_812D598  0x15 
+IOS_KERNEL:08141A48                 DCD sub_812D490  0x16 
+IOS_KERNEL:08141A4C                 DCD sub_812A2E8  0x17 
+IOS_KERNEL:08141A50                 DCD sub_812D254  0x18 
+IOS_KERNEL:08141A54                 DCD sub_812A5F4  0x19 
+IOS_KERNEL:08141A58                 DCD sub_812A314  0x1A 
+IOS_KERNEL:08141A5C                 DCD sub_8129970  0x1B 
+IOS_KERNEL:08141A60                 DCD sub_812A554  0x1C 
+IOS_KERNEL:08141A64                 DCD sub_812A508  0x1D 
+IOS_KERNEL:08141A68                 DCD sub_812A458  0x1E 
+IOS_KERNEL:08141A6C                 DCD sub_81298BC  0x1F 
+IOS_KERNEL:08141A70                 DCD sub_8120360  0x20 
+IOS_KERNEL:08141A74                 DCD sub_8120310  0x21 
+IOS_KERNEL:08141A78                 DCD sub_8120364  0x22 
+IOS_KERNEL:08141A7C                 DCD sub_8122CA8  0x23 
+IOS_KERNEL:08141A80                 DCD sub_8122D84  0x24 
+IOS_KERNEL:08141A84                 DCD sub_81234EC  0x25 
+IOS_KERNEL:08141A88                 DCD sub_8122C10  0x26 
+IOS_KERNEL:08141A8C                 DCD sub_81234E4  0x27 
+IOS_KERNEL:08141A90                 DCD sub_8123464  0x28 
+IOS_KERNEL:08141A94                 DCD sub_8123830  0x29 
+IOS_KERNEL:08141A98                 DCD sub_81237CC  0x2A 
+IOS_KERNEL:08141A9C                 DCD sub_8123894  0x2B 
+IOS_KERNEL:08141AA0                 DCD sub_81286A8  0x2C 
+IOS_KERNEL:08141AA4                 DCD sub_8127F28  0x2D 
+IOS_KERNEL:08141AA8                 DCD sub_8127E84  0x2E 
+IOS_KERNEL:08141AAC                 DCD sub_81261AC  0x2F 
+IOS_KERNEL:08141AB0                 DCD sub_8126278  0x30 
+IOS_KERNEL:08141AB4                 DCD sub_812583C  0x31 
+IOS_KERNEL:08141AB8                 DCD sub_8125EDC  0x32 
+IOS_KERNEL:08141ABC                 DCD sub_812940C  0x33 
+IOS_KERNEL:08141AC0                 DCD sub_8129368  0x34 
+IOS_KERNEL:08141AC4                 DCD sub_81292C8  0x35 
+IOS_KERNEL:08141AC8                 DCD sub_8129228  0x36 
+IOS_KERNEL:08141ACC                 DCD sub_8129188  0x37 
+IOS_KERNEL:08141AD0                 DCD sub_81290E0  0x38 
+IOS_KERNEL:08141AD4                 DCD sub_812903C  0x39 
+IOS_KERNEL:08141AD8                 DCD sub_8128D2C  0x3A 
+IOS_KERNEL:08141ADC                 DCD sub_8128C20  0x3B 
+IOS_KERNEL:08141AE0                 DCD sub_8128B98  0x3C 
+IOS_KERNEL:08141AE4                 DCD sub_8128B10  0x3D 
+IOS_KERNEL:08141AE8                 DCD sub_81289F0  0x3E 
+IOS_KERNEL:08141AEC                 DCD sub_8128950  0x3F 
+IOS_KERNEL:08141AF0                 DCD sub_81288BC  0x40 
+IOS_KERNEL:08141AF4                 DCD sub_8128C98  0x41 
+IOS_KERNEL:08141AF8                 DCD sub_8128A78  0x42 
+IOS_KERNEL:08141AFC                 DCD sub_8128ED4  0x43 
+IOS_KERNEL:08141B00                 DCD sub_8128F88  0x44 
+IOS_KERNEL:08141B04                 DCD sub_8128E20  0x45 
+IOS_KERNEL:08141B08                 DCD sub_8128794  0x46 
+IOS_KERNEL:08141B0C                 DCD sub_8128828  0x47 
+IOS_KERNEL:08141B10                 DCD sub_81286F4  0x48 
+IOS_KERNEL:08141B14                 DCD sub_8126E4C  0x49 
+IOS_KERNEL:08141B18                 DCD sub_8125758  0x4A 
+IOS_KERNEL:08141B1C                 DCD sub_81257A8  0x4B 
+IOS_KERNEL:08141B20                 DCD sub_8120068  0x4C 
+IOS_KERNEL:08141B24                 DCD sub_812009C  0x4D 
+IOS_KERNEL:08141B28                 DCD sub_8120034  0x4E 
+IOS_KERNEL:08141B2C                 DCD sub_8120000  0x4F 
+IOS_KERNEL:08141B30                 DCD sub_8120590  0x50 
+IOS_KERNEL:08141B34                 DCD sub_81201E0  0x51 
+IOS_KERNEL:08141B38                 DCD sub_8120160  0x52 
+IOS_KERNEL:08141B3C                 DCD sub_812A0DC  0x53 
+IOS_KERNEL:08141B40                 DCD sub_812DC4C  0x54 
+IOS_KERNEL:08141B44                 DCD sub_812DBDC  0x55 
+IOS_KERNEL:08141B48                 DCD sub_8124484  0x56 
+IOS_KERNEL:08141B4C                 DCD sub_812B4A8  0x57 
+IOS_KERNEL:08141B50                 DCD sub_812B654  0x58 
+IOS_KERNEL:08141B54                 DCD sub_812B6E4  0x59 
+IOS_KERNEL:08141B58                 DCD sub_812B72C  0x5A 
+IOS_KERNEL:08141B5C                 DCD sub_8120D78  0x5B 
+IOS_KERNEL:08141B60                 DCD sub_8129798  0x5C 
+IOS_KERNEL:08141B64                 DCD sub_8124B50  0x5D 
+IOS_KERNEL:08141B68                 DCD sub_81245C8  0x5E 
+IOS_KERNEL:08141B6C                 DCD sub_8129828  0x5F 
+IOS_KERNEL:08141B70                 DCD sub_8129788  0x60 
+IOS_KERNEL:08141B74                 DCD sub_812C1E4  0x61 
+IOS_KERNEL:08141B78                 DCD sub_812CD34  0x62 
+IOS_KERNEL:08141B7C                 DCD sub_812BB1C  0x63 
+IOS_KERNEL:08141B80                 DCD sub_812BED4  0x64 
+IOS_KERNEL:08141B84                 DCD sub_812BC2C  0x65 
+IOS_KERNEL:08141B88                 DCD sub_8123BD4  0x66 
+IOS_KERNEL:08141B8C                 DCD sub_8125D34  0x67 
+IOS_KERNEL:08141B90                 DCD sub_8125B30  0x68 
+IOS_KERNEL:08141B94                 DCD sub_812D260  0x69 
+IOS_KERNEL:08141B98                 DCD sub_812B38C  0x6A 
+IOS_KERNEL:08141B9C                 DCD sub_8122E88  0x6B 
+IOS_KERNEL:08141BA0                 DCD sub_81209CC  0x6C 
+IOS_KERNEL:08141BA4                 DCD sub_8129870  0x6D 
+IOS_KERNEL:08141BA8                 DCD sub_8120970  0x6E 
+IOS_KERNEL:08141BAC                 DCD sub_8120988  0x6F 
+IOS_KERNEL:08141BB0                 DCD sub_8120998  0x70 
+IOS_KERNEL:08141BB4                 DCD sub_81209B8  0x71 
+IOS_KERNEL:08141BB8                 DCD sub_FFFFDC48 0x72 
+IOS_KERNEL:08141BBC                 DCD sub_8129CE0  0x73 
+IOS_KERNEL:08141BC0                 DCD sub_8129760  0x74 
+IOS_KERNEL:08141BC4                 DCD sub_8129734  0x75 
+IOS_KERNEL:08141BC8                 DCD sub_812B858  0x76 
+IOS_KERNEL:08141BCC                 DCD sub_8121D58  0x77 
+IOS_KERNEL:08141BD0                 DCD sub_8121E34  0x78 
+IOS_KERNEL:08141BD4                 DCD sub_81299E8  0x79 
+IOS_KERNEL:08141BD8                 DCD sub_81297D8  0x7A 
+IOS_KERNEL:08141BDC                 DCD sub_8126604  0x7B 
+IOS_KERNEL:08141BE0                 DCD sub_81297E8  0x7C 
+IOS_KERNEL:08141BE4                 DCD sub_8129818  0x7D 
+IOS_KERNEL:08141BE8                 DCD sub_8124518  0x7E 
+IOS_KERNEL:08141BEC                 DCD sub_8129F94  0x7F 
+IOS_KERNEL:08141BF0                 DCD sub_8129C38  0x80 
+IOS_KERNEL:08141BF4                 DCD sub_812CD2C  0x81 
+IOS_KERNEL:08141BF8                 DCD sub_8125960  0x82 
+IOS_KERNEL:08141BFC                 DCD sub_8128430  0x83 
+IOS_KERNEL:08141C00                 DCD sub_8125800  0x84 
+IOS_KERNEL:08141C04                 DCD sub_81263F8  0x85 
+IOS_KERNEL:08141C08                 DCD sub_8121CDC  0x86 
+IOS_KERNEL:08141C0C                 DCD sub_FFFFDFC8 0x87 
 ```
