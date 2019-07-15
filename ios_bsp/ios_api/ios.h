@@ -22,3 +22,5 @@ IOSError IOS_DeviceAssosciate(const char* device, int id);
 
 typedef int32_t IOSCrossProcessHeap;
 IOSCrossProcessHeap IOS_CreateCrossProcessHeap(size_t size);
+
+void IOS_SetBSPReady();
