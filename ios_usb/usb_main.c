@@ -1,9 +1,12 @@
+uint32_t[2] default_uptime = { 0, 0 }; //.rodata:101403F8
+
 void __startRootHubs(int options) { //TODO: figure out that wonky math for error status
 	uint32_t[4] errlist; //SP+4-0x14
 	uint32_t[2] uptime; //SP+0x14, +0x18
-	sub_1012F040(&uptime, &dword_101403F8, 8);
+	//no idea why they do it like this
+	memcpy(&uptime, &dword_101403F8, sizeof(uptime));
 	IOS_GetUpTimeStruct(&uptime);
-	sub_1012CD80(dword_10145000, 3, "Activating root hubs @ uptime %d.%03d s with options 0x%x.\n", uptime[0], uptime[1], options);
+	sub_1012CD80(dword_10145000, 3, "Activating root hubs @ uptime %d.%03d s with options 0x%x.\n", uptime[1], uptime[0] / 1000, options);
 	ret = UhsServerAddHc(dword_10145020, 0, options);
 	if ( ret >= 0 ) { //negative = error
 		sub_1012CD80(dword_10145000, 0, "%s OK.\n", "UhsServerAddHc 0");
@@ -54,19 +57,19 @@ void __startRootHubs(int options) { //TODO: figure out that wonky math for error
 
 sub_1012CE60(R0, R1) {
 	if (&dword_101450C0 < 0) //last error?
-		ret = IOS_PushIob(1, 1); //???
+		ret = IOS_CreateSemaphore(1, 1); //???
 		if (ret < 0) {
 			sub_1012F250("LOG ERROR: mutex init error!\n");
 			return -1;
 		}
-		ret = IOS_PullIob(&dword_101450C0, 0);
+		ret = IOS_WaitSemaphore(&dword_101450C0, 0);
 		if (ret != 0) {
 			sub_1012F250("LOG ERROR: log_open(%s, %d, ...) failed\n", R0, R1);
 			return -1;
 		}
-				
-				
-				
-	IOS_VerifyIOBuf(&dword_101450C0);
+
+
+
+	IOS_SignalSemaphore(&dword_101450C0);
 	//unfinished cuz not dealing with this bs tonight, some loop conditional shenanigans
 }
