@@ -17,6 +17,10 @@ indent_size = 4
 indent_style = space
 indent_size = 4
 
+# who needs to commit a indent change
+[usb_main.c]
+indent_style = tab
+
 [*.{psh,vsh}]
 indent_style = space
 indent_size = 2
