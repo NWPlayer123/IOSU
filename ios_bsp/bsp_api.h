@@ -1,23 +1,26 @@
-//TODO convert to hex and clean up
-typedef enum BSP_RVAL {
-    BSP_RVAL_BOARD_CONFIG_INVALID=262144,
-    BSP_RVAL_CFG_CORRUPTED=8,
-    BSP_RVAL_DEVICE_BUSY=32,
-    BSP_RVAL_DEVICE_ERROR=16,
-    BSP_RVAL_DEVICE_NOT_FOUND=32768,
-    BSP_RVAL_ENTITY_LIST_FULL=512,
-    BSP_RVAL_HEAP_ERROR=256,
-    BSP_RVAL_INVALID_INSTANCE=4,
-    BSP_RVAL_INVALID_PARAMETER=16384,
-    BSP_RVAL_OK=0,
-    BSP_RVAL_OS_ERROR=64,
-    BSP_RVAL_QUERY_UNAVAILABLE=4096,
-    BSP_RVAL_REQUEST_DENIED=65536,
-    BSP_RVAL_SPECIFIED_SIZE_INVALID=128,
-    BSP_RVAL_UNKNOWN_ATTRIBUTE=2,
-    BSP_RVAL_UNKNOWN_DEVICE=8192,
-    BSP_RVAL_UNKNOWN_ENTITY=1,
-    BSP_RVAL_UNKNOWN_HARDWARE_VERSION=2048,
-    BSP_RVAL_UNSUPPORTED_METHOD=1024,
-    BSP_RVAL_UNSUPPORTED_PARAMETER=131072
-} BSP_RVAL;
+#pragma once
+#include "bsp_api_enum.h"
+
+typedef struct BSP_ATTRIBUTE_TAG {
+    char * pName;
+    enum BSP_ATTRIBUTE_OPTIONS options;
+    enum BSP_ATTRIBUTE_PERMISSIONS permissions;
+    u32 data;
+    ulong dataSize;
+    BSP_RVAL (* readMethod)(u32, struct BSP_ATTRIBUTE_TAG *, void *);
+    BSP_RVAL (* queryMethod)(u32, struct BSP_ATTRIBUTE_TAG *, void *);
+    BSP_RVAL (* writeMethod)(u32, struct BSP_ATTRIBUTE_TAG *, void *);
+    BSP_RVAL (* initMethod)(u32, struct BSP_ATTRIBUTE_TAG *, void *, ulong);
+    BSP_RVAL (* shutdownMethod)(u32, struct BSP_ATTRIBUTE_TAG *);
+    pointer field_0x28;
+} BSP_ATTRIBUTE;
+
+typedef u32 BSP_ENTITY_VERSION;
+
+typedef struct BSP_ENTITY {
+    char * pName;
+    BSP_ENTITY_VERSION version;
+    u32 instanceCount;
+    enum BSP_ENTITY_OPTIONS options;
+    BSP_ATTRIBUTE * pAttributes[];
+} BSP_ENTITY;

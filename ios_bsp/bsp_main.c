@@ -190,43 +190,44 @@ report_err:
 unsigned int init_stuff() {
     unsigned int ret /*r4|r5*/;
     ret = sub_E6000CC4();
-    ret |= sub_E600580C();
-    ret |= sub_E6006BA4();
-    ret |= sub_E6006A3C();
-    ret |= sub_E6007D5C();
-    ret |= sub_E6004E68();
-    ret |= sub_E6003198();
-    ret |= sub_E6000F80();
-    ret |= sub_E6002800();
-    ret |= sub_E60068CC();
-    ret |= sub_E6005D5C();
-    ret |= sub_E6008C0C();
-    ret |= sub_E6009584();
-    ret |= sub_E60095C4();
-    ret |= sub_E60099CC();
-    ret |= sub_E6009D68();
-    ret |= sub_E600A2B0();
-    ret |= sub_E60040D8();
-    ret |= sub_E600A398();
-    ret |= sub_E600B0D8();
-    ret |= sub_E600B864();
+    ret |= sub_E600580C(); //bspResetInstall
+    ret |= sub_E6006BA4(); //bspRAMInstall
+    ret |= sub_E6006A3C(); //bspDIInstall
+    ret |= sub_E6007D5C(); //bspPPCInstall
+    ret |= sub_E6004E68(); //bspSDIOInstall
+    ret |= sub_E6003198(); //bspVIInstall
+    ret |= sub_E6000F80(); //bspAIInstall
+    ret |= sub_E6002800(); //bspUSBInstall
+    ret |= sub_E60068CC(); //bspSIInstall
+    ret |= sub_E6005D5C(); //bspCortadoInstall
+    ret |= sub_E6008C0C(); //bspSATAInstall
+    ret |= sub_E6009584(); //bspFLAInstall
+    ret |= sub_E60095C4(); //bspSMCInstall
+    ret |= sub_E60099CC(); //bspRTCInstall
+    ret |= sub_E6009D68(); //bspCCRHInstall
+    ret |= sub_E600A2B0(); //bspWIFIInstall
+    ret |= sub_E60040D8(); //bspGFXInstall
+    ret |= sub_E600A398(); //bspEEInstall
+    ret |= sub_E600B0D8(); //bspDDRPerfInstall
+    ret |= sub_E600B864(); //bspDISPLAYInstall
     return ret;
 }
 
 // now for hardware versioning: this bit doesn't make much sense yet
 
-unsigned int dword_E6047204; //.bss:E6047204
-unsigned int arr_E6047208[0x80]; //.bss:E6047208
-unsigned int bspHardwareVersion; //.bss:E6047984
+unsigned int bspEntityCount; //.bss:E6047204
+BSP_ENTITY* bspEntityList[0x20]; //.bss:E6047208
+BSP_HARDWARE_VERSION bspHardwareVersion; //.bss:E6047984
 BC_CONFIG bspEEBoardConfigData; //.bss:E604798C
 
 /*  Some kind of Wood hardware init?
-*/
+ *  .text:E6000CC4
+ */
 int sub_E6000CC4() {
     int error /*r4|r5*/;
 
-    dword_E6047204 = 0;
-    memset(&arr_E6047208, 0, 0x80);
+    bspEntityCount = 0;
+    memset(&bspEntityList, 0, sizeof(bspEntityList));
 
     log_fd = log_open("BSP", 1, 3); //.text:E604697C; name from log output
 
@@ -234,27 +235,30 @@ int sub_E6000CC4() {
     *LT_EXICTRL = (*LT_EXICTRL & ~1) | 1; //enable EXI
 
     error  = InitASICVersion(&bspHardwareVersion); //.text:E600B5B4 - see below
-    error |= sub_E6006800(); //see below
+    error |= bspGPIOInstall(); //see below
 
     bspHardwareVersion = 0; //are you kidding me, Nintendo?
 
     error |= bspMethodGetHardwareVersion(&bspHardwareVersion); //see below
+
+    return error;
 }
 
-int sub_E6006800() {
+/*  Installs GPIO entity
+ *  .text:e6006800
+ */
+int bspGPIOInstall() {
     int ret;
-    unsigned int woodver;
+    BSP_HARDWARE_VERSION hwver;
 
-    ret = bspMethodGetHardwareVersion(&woodver); //.text:E600B62C - see below
-    if (ret == 0) {
-        if ((woodver & 0xF0000000) != 0) {
-            return sub_E6000B60(/* &something */);
-            //something: &"GPIO", 1, 1, 1, &&"IOStrength", 0x90000000, 0, 1
-            //TODO probably a BSP entity
-        }
-        return 0x800;
+    ret = bspMethodGetHardwareVersion(&hwver); //.text:E600B62C - see below
+    if (ret != BSP_RVAL_OK) return ret;
+
+    if ((hwver & 0xF0000000) == 0) {
+        return BSP_RVAL_UNKNOWN_HARDWARE_VERSION;
     }
-    //TODO I'm sick of hardware versioning
+
+    return bspRegisterEntity(&gpio_latte_entity);
 }
 
 /*  Something to do with getting the hardware version?
