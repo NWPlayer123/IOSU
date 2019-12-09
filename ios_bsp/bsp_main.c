@@ -118,7 +118,7 @@ void main() {
                     if (__builtin_bswap32(inPtr[0x11]/*inPtr+0x44*/) != 4) {
                         result = 0x80;
                     } else {
-                        result = sub_E600B62C(outPtr);
+                        result = bspMethodGetHardwareVersion(outPtr);
                     }
                 }
                 case 0x3: {
@@ -217,7 +217,8 @@ unsigned int init_stuff() {
 
 unsigned int dword_E6047204; //.bss:E6047204
 unsigned int arr_E6047208[0x80]; //.bss:E6047208
-unsigned int wood_hardware_ver; //.bss:E6047984
+unsigned int bspHardwareVersion; //.bss:E6047984
+BC_CONFIG bspEEBoardConfigData; //.bss:E604798C
 
 /*  Some kind of Wood hardware init?
 */
@@ -232,19 +233,19 @@ int sub_E6000CC4() {
     *LT_RESETS_COMPAT |= 0xD0000; //acc. to WiiBrew, this is DDR2, I and DDR1
     *LT_EXICTRL = (*LT_EXICTRL & ~1) | 1; //enable EXI
 
-    error  = InitASICVersion(&wood_hardware_ver); //.text:E600B5B4 - see below
+    error  = InitASICVersion(&bspHardwareVersion); //.text:E600B5B4 - see below
     error |= sub_E6006800(); //see below
 
-    wood_hardware_ver = 0; //are you kidding me, Nintendo?
+    bspHardwareVersion = 0; //are you kidding me, Nintendo?
 
-    error |= sub_E600B62C(&wood_hardware_ver); //see below
+    error |= bspMethodGetHardwareVersion(&bspHardwareVersion); //see below
 }
 
 int sub_E6006800() {
     int ret;
     unsigned int woodver;
 
-    ret = sub_E600B62C(&woodver); //.text:E600B62C - see below
+    ret = bspMethodGetHardwareVersion(&woodver); //.text:E600B62C - see below
     if (ret == 0) {
         if ((woodver & 0xF0000000) != 0) {
             return sub_E6000B60(/* &something */);
@@ -257,22 +258,52 @@ int sub_E6006800() {
 }
 
 /*  Something to do with getting the hardware version?
+*   .text:e600b62c
 */
-int sub_E600B62C(unsigned int *woodver) {
+BSP_RVAL bspMethodGetHardwareVersion(BSP_HARDWARE_VERSION *version) {
     int ret;
 
-    *woodver = wood_hardware_ver;
-    if (!wood_hardware_ver) return 0;
+    *version = bspHardwareVersion;
+    if (!bspHardwareVersion) return 0;
 
-    ret = GetWoodHardwareVersion(woodver, true); //.text:E600B41C - see below
-    if (ret) return ret;
+    ret = determineWoodBasedHardwareVersion(version, true); //.text:E600B41C - see below
+    if (ret != BSP_RVAL_OK) return ret;
 
-    if (*woodver == BSP_HARDWARE_VERSION_BOLLYWOOD_PROD_FOR_WII) {
-        //TODO: lots more stuff, checks on the Latte hw asic ver
+    if (*version == BSP_HARDWARE_VERSION_BOLLYWOOD_PROD_FOR_WII) {
+        ret = determineLatteBasedHardwareVersion(version);
+        if (ret != BSP_RVAL_OK) {
+            bspHardwareVersion = *version;
+            return BSP_RVAL_OK;
+        }
+
+        *version &= 0xFFFF0000;
+
+        ret = bspMethodReadEEBoardConfig(&bspEEBoardConfigData);
+        if (ret != BSP_RVAL_OK) {
+            *version |= 0x11; //EV_Y board
+        } else {
+            switch (bspEEBoardConfigData.boardType) {
+                case 0x4346:
+                    *version |= 0x28; //CAFE board
+                    break;
+                case 0x4354:
+                    *version |= 0x20; //CAT board
+                    break;
+                case 0x4556:
+                    *version |= 0x10; //EV board
+                    break;
+                case 0x4944:
+                    *version |= 0x21; //unknown? newer than c2w symbols?
+                    break;
+                case 0x4948:
+                    *version |= 0x29; //also unknown
+                    break;
+            }
+        }
     }
 
-    wood_hardware_ver = *woodver;
-    return 0;
+    bspHardwareVersion = *version;
+    return BSP_RVAL_OK;
 }
 
 /*  Something to do with getting the Wood version?
@@ -281,10 +312,10 @@ int sub_E600B62C(unsigned int *woodver) {
 int InitASICVersion(unsigned int* woodver) {
     int ret;
 
-    *woodver = wood_hardware_ver;
-    if (wood_hardware_ver) return 0;
+    *woodver = bspHardwareVersion;
+    if (bspHardwareVersion) return 0;
 
-    ret = GetWoodHardwareVersion(woodver, false); //.text:E600B41C - see below
+    ret = determineWoodBasedHardwareVersion(woodver, false); //.text:E600B41C - see below
     if (ret) return ret;
 
     if (*woodver == BSP_HARDWARE_VERSION_BOLLYWOOD_PROD_FOR_WII) {
@@ -299,88 +330,88 @@ int InitASICVersion(unsigned int* woodver) {
 unsigned short word_E6047988; //.bss:E6047988. IDA reckons it's a byte.
 
 /*  .text:E600B41C
-    Decodes LT_ASICREV_ACR; placing the result in woodver.
+    Decodes LT_ASICREV_ACR aka HW_CHIPREVID; placing the result in woodver.
     Doesn't seem to be an ASICREV_ACR revision for HOLLYWOOD_PROD_FOR_WII or
     HOLLYWOOD_CORTADO_ESPRESSO, this is determined from other factors */
-int GetWoodHardwareVersion(unsigned int* woodver, bool doExtraHardwareVersions) {
+BSP_RVAL determineWoodBasedHardwareVersion(BSP_HARDWARE_VERSION* version, bool fullCheck) {
     int ret;
 
-    switch (*LT_ASICREV_ACR & 0xFF /*VERLO: revision*/) {
+    switch (*HW_CHIPREVID & 0xFF /*VERLO: revision*/) {
         case 0x00: {
-            *woodver = BSP_HARDWARE_VERSION_HOLLYWOOD_ENG_SAMPLE_1;
-            return 0;
+            *version = BSP_HARDWARE_VERSION_HOLLYWOOD_ENG_SAMPLE_1;
+            return BSP_RVAL_OK;
         }
         case 0x10: {
-            *woodver = BSP_HARDWARE_VERSION_HOLLYWOOD_ENG_SAMPLE_2;
-            return 0;
+            *version = BSP_HARDWARE_VERSION_HOLLYWOOD_ENG_SAMPLE_2;
+            return BSP_RVAL_OK;
         }
         case 0x11: {
-            *woodver = BSP_HARDWARE_VERSION_CORTADO;
-            if (!doExtraHardwareVersions) return 0;
+            *version = BSP_HARDWARE_VERSION_CORTADO;
+            if (!fullCheck) return BSP_RVAL_OK;
 
             unsigned int isCortado;
             ret = CheckCortado(&isCortado); //.text:E6005818
-            if (ret) return 0;
+            if (ret) return BSP_RVAL_OK;
 
             if (!isCortado) {
-                *woodver = BSP_HARDWARE_VERSION_HOLLYWOOD_PROD_FOR_WII;
-                return 0;
+                *version = BSP_HARDWARE_VERSION_HOLLYWOOD_PROD_FOR_WII;
+                return BSP_RVAL_OK;
             }
 
             sub_E6007C5C(&word_E6047988);
-            *woodver = BSP_HARDWARE_VERSION_CORTADO;
+            *version = BSP_HARDWARE_VERSION_CORTADO;
             if (word_E6047988 == 0x7001) {
-                *woodver = BSP_HARDWARE_VERSION_CORTADO_ESPRESSO;
+                *version = BSP_HARDWARE_VERSION_CORTADO_ESPRESSO;
             }
-            return 0;
+            return BSP_RVAL_OK;
         }
         case 0x20: {
-            *woodver = BSP_HARDWARE_VERSION_BOLLYWOOD;
-            return 0;
+            *version = BSP_HARDWARE_VERSION_BOLLYWOOD;
+            return BSP_RVAL_OK;
         }
         case 0x21: {
-            *woodver = BSP_HARDWARE_VERSION_BOLLYWOOD_PROD_FOR_WII;
-            return 0;
+            *version = BSP_HARDWARE_VERSION_BOLLYWOOD_PROD_FOR_WII;
+            return BSP_RVAL_OK;
         }
         default: {
-            *woodver = BSP_HARDWARE_VERSION_UNKNOWN;
-            return 0x800;
+            *version = BSP_HARDWARE_VERSION_UNKNOWN;
+            return BSP_RVAL_UNKNOWN_HARDWARE_VERSION;
         }
     }
 }
 
 //.text:E600B328
-int GetLatteHardwareVersion(unsigned int* woodver) {
+BSP_RVAL determineLatteBasedHardwareVersion(BSP_HARDWARE_VERSION* version) {
     int ret;
 
-    uint32_t asicrev_ccr = *LT_ASICREV_CCR;
-    if (asicrev_ccr & 0xFFFF0000 != 0xCAFE0000) {
-        return 0x800;
+    uint32_t lt_chiprev = *LT_CHIPREVID;
+    if (lt_chiprev & 0xFFFF0000 != 0xCAFE0000) {
+        return BSP_RVAL_UNKNOWN_HARDWARE_VERSION;
     }
 
-    *woodver &= 0x000FFFFF;
+    *version &= 0x000FFFFF;
 
-    switch (asicrev_ccr & 0xFF) /* VERLO */ {
+    switch (lt_chiprev & 0xFF) /* VERLO */ {
         case 0x10:
-            *woodver |= 0x21100000; //Latte A11
-            return 0;
+            *version |= 0x21100000; //Latte A11
+            return BSP_RVAL_OK;
         case 0x18:
-            *woodver |= 0x21200000; //Latte A12
-            return 0;
+            *version |= 0x21200000; //Latte A12
+            return BSP_RVAL_OK;
         case 0x21:
-            *woodver |= 0x22100000; //Latte A2x
-            return 0;
+            *version |= 0x22100000; //Latte A2x
+            return BSP_RVAL_OK;
         case 0x30:
-            *woodver |= 0x23100000; //Latte A3x
-            return 0;
+            *version |= 0x23100000; //Latte A3x
+            return BSP_RVAL_OK;
         case 0x40:
-            *woodver |= 0x24100000; //Latte A4x
-            return 0;
+            *version |= 0x24100000; //Latte A4x
+            return BSP_RVAL_OK;
         case 0x50:
-            *woodver |= 0x25100000; //Latte A5x
-            return 0;
+            *version |= 0x25100000; //Latte A5x
+            return BSP_RVAL_OK;
         default:
-            *woodver |= 0x26100000; //Latte B1x
-            return 0;
+            *version |= 0x26100000; //Latte B1x
+            return BSP_RVAL_OK;
     }
 }
