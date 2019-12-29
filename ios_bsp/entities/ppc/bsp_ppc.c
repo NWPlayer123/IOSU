@@ -114,14 +114,13 @@ BSP_RVAL bspPPCInstall() {
 
     ret = bspMethodGetHardwareVersion(&hwver);
     if (ret != BSP_RVAL_OK) return ret;
-    uint8_t boardType = (hwver & 0xFF000000) >> 24;
 
     ret = bspPPCFillOutSummary(summary); //.text:e60079c4
     if (ret != BSP_RVAL_OK) return ret;
 
 /*  TODO the control flow here might not be 100% accurate */
     if (hwver == BSP_HARDWARE_VERSION_HOLLYWOOD_CORTADO_ESPRESSO ||
-        (hwver & 0xF0000000) != 0) {
+        BSP_IS_LATTE(hwver)) {
         if (hwver == BSP_HARDWARE_VERSION_HOLLYWOOD_CORTADO_ESPRESSO) {
             eeStuff = 0x0042;
         } else {
@@ -133,9 +132,11 @@ BSP_RVAL bspPPCInstall() {
         }
         if (!ret) return ret;
         pPPCEntity = latte_ppc_entity;
-    } else if ((hwver & 0xF0000000) == 0) {
+    } else {
     /*  This is a Wii or other machine with a single-core PowerPC */
-        if (boardType != 0x20 && boardType != 0x10 && boardType != 0x00) {
+        if (!BSP_IS_BOLLYWOOD(hwver) &&
+            !BSP_IS_HOLLYWOOD(hwver) &&
+            !BSP_IS_HOLLYWOOD_ES1(hwver)) {
             return BSP_RVAL_UNKNOWN_HARDWARE_VERSION;
         }
 
@@ -145,10 +146,12 @@ BSP_RVAL bspPPCInstall() {
         pPPCEntity = wood_ppc_entity;
     }
 
-    if (boardType == 0x20 || boardType == 0x10 || boardType == 0x00) {
+    if (BSP_IS_BOLLYWOOD(hwver) ||
+        BSP_IS_HOLLYWOOD(hwver) ||
+        BSP_IS_HOLLYWOOD_ES1(hwver)) {
         pPPCExecStop = bspPPCExecStop;
         pPPCExecStart = bspPPCExecStart;
-    } else if ((hwver & 0xF0000000) != 0) {
+    } else if (BSP_IS_LATTE(hwver)) {
         pPPCExecStop = bspPPCExecStopLatte;
         pPPCExecStart = bspPPCExecStartLatte;
     }
