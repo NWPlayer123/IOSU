@@ -21,3 +21,9 @@
     #define HW_IOSTRCTRL0_SI(val) HW_IOSTRCTRL0_BIT(2, val)
     #define HW_IOSTRCTRL0_DI(val) HW_IOSTRCTRL0_BIT(6, val)
     #define HW_IOSTRCTRL0_VI(val) HW_IOSTRCTRL0_BIT(7, val)
+
+// https://wiiubrew.org/wiki/Hardware/Latte_Registers#HW_IOSTRCTRL0
+#define HW_IOSTRCTRL1 ((uint32_t*)0x0d8001e4)
+    #define HW_IOSTRCTRL1_BIT(dev, val) (val << (dev * 3))
+    #define HW_IOSTRCTRL1_MASK 3
+    #define HW_IOSTRCTRL1_SDIO(val) HW_IOSTRCTRL1_BIT(7, val)
