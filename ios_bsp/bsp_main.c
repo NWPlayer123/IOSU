@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "ios_api/ios.h"
+#include "bsp_public_api.h"
 #include "bsp_hwrevs.h"
 
 typedef struct fd_t {
@@ -101,51 +102,48 @@ void main() {
             uint32_t cmd = (uint32_t)__builtin_bswap32(msg->arg0);
             uint32_t* inPtr = (uint32_t*)__builtin_bswap32(msg->arg1);
             uint32_t* outPtr = (uint32_t*)__builtin_bswap32(msg->arg3);
+            BSP_IOCTL_METHOD* args = (BSP_IOCTL_METHOD*)inPtr;
 
-        /*  There's a cmd-- here. I've offset the case statements to account
-            for this.
-            These ioctls obviously operate on some kind of struct, though I've
-            no idea what it might look like */
             switch (cmd) {
-                case 0x1: {
-                    if (__builtin_bswap32(inPtr[0x11]/*aka inPtr+0x44*/) != 4) {
-                        result = 0x80;
+                case BSP_IOCTL_GET_ENTITY_VERSION: {
+                    if (__builtin_bswap32(args->size) != 4) {
+                        result = BSP_RVAL_SPECIFIED_SIZE_INVALID;
                     } else {
                         result = sub_E6000668(inPtr, outPtr);
                     }
                 }
-                case 0x2: {
-                    if (__builtin_bswap32(inPtr[0x11]/*inPtr+0x44*/) != 4) {
-                        result = 0x80;
+                case BSP_IOCTL_GET_HARDWARE_VERSION: {
+                    if (__builtin_bswap32(args->size) != 4) {
+                        result = BSP_RVAL_SPECIFIED_SIZE_INVALID;
                     } else {
                         result = bspMethodGetHardwareVersion(outPtr);
                     }
                 }
-                case 0x3: {
-                    if (__builtin_bswap32(inPtr[0x11]/*+0x44*/) != 4) {
-                        result = 0x80;
+                case BSP_IOCTL_GET_CONSOLE_MASK: {
+                    if (__builtin_bswap32(args->size) != 4) {
+                        result = BSP_RVAL_SPECIFIED_SIZE_INVALID;
                     } else {
                         result = sub_E600B1A4(outPtr);
                     }
                 }
-                case 0x4: {
-                    result = sub_E6000A90(inPtr, __builtin_bswap32(inPtr[8]/*+0x20*/), &(inPtr[9]/*+0x24*/), __builtin_bswap32(inPtr[0x11]/*+0x44*/), /*stack args, unsure of order*/ outPtr, bsp_fdtable[fd].permissions);
+                case BSP_IOCTL_METHOD_QUERY: {
+                    result = bspMethodQuery(args->entityName, __builtin_bswap32(args->instance), &args->attributeName, __builtin_bswap32(args->size), outPtr, bsp_fdtable[fd].permissions); //.text:e6000a90
                 }
-                case 0x5: {
-                    result = sub_E6000A14(inPtr, __builtin_bswap32(inPtr[8]/*+0x20*/), &(inPtr[9]/*+0x24*/), __builtin_bswap32(inPtr[0x11]/*+0x44*/), /*stack args, unsure of order*/ outPtr, bsp_fdtable[fd].permissions);
+                case BSP_IOCTL_METHOD_READ: {
+                    result = bspMethodRead(args->entityName, __builtin_bswap32(args->instance), &args->attributeName, __builtin_bswap32(args->size), outPtr, bsp_fdtable[fd].permissions); //.text:e6000a14
                 }
-                case 0x6: {
-                    result = sub_E6000998(inPtr, __builtin_bswap32(inPtr[8]/*+0x20*/), &(inPtr[9]/*+0x24*/), __builtin_bswap32(inPtr[0x11]/*+0x44*/), &(inPtr[0x12]/*+0x48*/), bsp_fdtable[fd].permissions);
+                case BSP_IOCTL_METHOD_WRITE: {
+                    result = bspMethodWrite(args->entityName, __builtin_bswap32(args->instance), &args->attributeName, __builtin_bswap32(args->size), &args->inData, bsp_fdtable[fd].permissions); //.text:e6000998
                 }
-                case 0x7: {
-                    result = sub_E6000890(inPtr, __builtin_bswap32(inPtr[8]/*+0x20*/), &(inPtr[9]/*+0x24*/), __builtin_bswap32(inPtr[0x11]/*+0x44*/), &(inPtr[0x12]/*+0x48*/), bsp_fdtable[fd].permissions);
+                case BSP_IOCTL_METHOD_INIT: {
+                    result = bspMethodInit(args->entityName, __builtin_bswap32(args->instance), &args->attributeName, __builtin_bswap32(args->size), &args->inData, bsp_fdtable[fd].permissions); //.text:e6000890
                 }
-                case 0x8: {
-                    result = sub_E6000830(inPtr, __builtin_bswap32(inPtr[8]/*+0x20*/), &(inPtr[9]/*+0x24*/), bsp_fdtable[fd].permissions);
+                case BSP_IOCTL_METHOD_SHUTDOWN: {
+                    result = bspMethodShutdown(args->entityName, __builtin_bswap32(args->instance), &args->attributeName, bsp_fdtable[fd].permissions); //.text:e6000830
                 }
-                case 0x9: {
-                    if (__builtin_bswap32(inPtr[0x11]/*+0x44*/) != 4) {
-                        result = 0x80;
+                case BSP_IOCTL_GET_CONSOLE_TYPE: {
+                    if (__builtin_bswap32(args->size) != 4) {
+                        result = BSP_RVAL_SPECIFIED_SIZE_INVALID;
                     } else {
                         result = sub_E600B270(outPtr);
                     }
