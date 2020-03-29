@@ -1,0 +1,3 @@
+Argh! Nintendo got me good. A lot of their code *looks* like a 32-bit byteswap,
+but actually puts out exactly the same value it took in.
+Please second-guess any byteswaps in this code until I can audit them all.
