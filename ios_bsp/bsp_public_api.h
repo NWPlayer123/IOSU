@@ -19,4 +19,26 @@ enum BSP_IOCTL {
     BSP_IOCTL_METHOD_INIT = 7,
     BSP_IOCTL_METHOD_SHUTDOWN = 8,
     BSP_IOCTL_GET_CONSOLE_TYPE = 9,
-}
+};
+
+typedef struct BSP_SYSTEM_CLOCK_INFO {
+    uint32_t systemClockFrequency;
+    uint32_t timerFrequency;
+} BSP_SYSTEM_CLOCK_INFO;
+
+typedef struct BSP_PPC_SUMMARY {
+    uint32_t numberOfCores;
+    uint32_t activeCoreBitmap;
+    BSP_SYSTEM_CLOCK_INFO clock60x;
+} BSP_PPC_SUMMARY;
+//sizeof(BSP_PPC_SUMMARY) = 0x10
+
+typedef struct BSP_PPC_CORE_PROPERTIES {
+    uint32_t l2Size;
+    uint32_t l2LineSize;
+    uint32_t l2SectorSize;
+    uint32_t l2FetchSize;
+    uint32_t l2SetAssociativity;
+    uint8_t coreActive;
+} BSP_PPC_CORE_PROPERTIES;
+//sizeof(BSP_PPC_CORE_PROPERTIES) = 0x15
