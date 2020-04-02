@@ -216,7 +216,7 @@ unsigned int init_stuff() {
 unsigned int bspEntityCount; //.bss:E6047204
 BSP_ENTITY* bspEntityList[0x20]; //.bss:E6047208
 BSP_HARDWARE_VERSION bspHardwareVersion; //.bss:E6047984
-BC_CONFIG bspEEBoardConfigData; //.bss:E604798C
+BC_CONFIG bspBoardConfig; //.bss:E604798C
 
 /*  Some kind of Wood hardware init?
  *  .text:E6000CC4
@@ -280,11 +280,11 @@ BSP_RVAL bspMethodGetHardwareVersion(BSP_HARDWARE_VERSION *version) {
 
         *version &= 0xFFFF0000;
 
-        ret = bspMethodReadEEBoardConfig(&bspEEBoardConfigData);
+        ret = bspMethodReadEEBoardConfig(&bspBoardConfig);
         if (ret != BSP_RVAL_OK) {
             *version |= 0x11; //EV_Y board
         } else {
-            switch (bspEEBoardConfigData.boardType) {
+            switch (bspBoardConfig.boardType) {
                 case 0x4346:
                     *version |= 0x28; //CAFE board
                     break;
