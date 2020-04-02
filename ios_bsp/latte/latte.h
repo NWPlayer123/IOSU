@@ -27,3 +27,6 @@
     #define HW_IOSTRCTRL1_BIT(dev, val) (val << (dev * 3))
     #define HW_IOSTRCTRL1_MASK 3
     #define HW_IOSTRCTRL1_SDIO(val) HW_IOSTRCTRL1_BIT(7, val)
+
+#define LT_IOP2X ((uint32_t*)0x0d8005bc)
+    #define LT_IOP2X_ENABLE 0x04
