@@ -417,3 +417,42 @@ BSP_RVAL determineLatteBasedHardwareVersion(BSP_HARDWARE_VERSION* version) {
             return BSP_RVAL_OK;
     }
 }
+
+//.text:e6001920
+BSP_RVAL bspGetSystemClockInfo(BSP_SYSTEM_CLOCK_INFO* clock) {
+    memcpy(clock, &BSPDefaultClockdata, sizeof(*clock));
+
+    BSP_HARDWARE_VERSION hwver;
+    ret = bspMethodGetHardwareVersion(&hwver);
+    if (ret != BSP_RVAL_OK) return;
+
+    if (BSP_IS_HOLLYWOOD(hwver) ||
+        BSP_IS_HOLLYWOOD_ES1(hwver)) {
+        if (*HW_CLOCKS & HW_CLOCKS_SPEED(1)) {
+            clock->systemClockFrequency = 162000000;
+        } else {
+            clock->systemClockFrequency = 243000000;
+        }
+        if (hwver == BSP_HARDWARE_VERSION_HOLLYWOOD_CORTADO_ESPRESSO ||
+            hwver == BSP_HARDWARE_VERSION_HOLLYWOOD_CORTADO) {
+            clock->systemClockFrequency = 167000000;
+        }
+    } else if (BSP_IS_LATTE(hwver)) {
+        //inline:e60011a0
+        if (bspBoardConfig.version > 2) {
+            if (bspBoardConfig.sysPllSpeed == 0xf0) {
+                clock->systemClockFrequency = 239625000;
+            } else if (bspBoardConfig.sysPllSpeed == 0xf8) {
+                clock->systemClockFrequency = 248625000;
+            }
+        } else {
+            clock->systemClockFrequency = 243000000;
+        }
+        //finish inline
+        if (*LT_PLLSYS & 1) {
+            clock->systemClockFrequency /= 2;
+        }
+    }
+    clock->timerFrequency = clock->systemClockFrequency / 128;
+    return;
+}
