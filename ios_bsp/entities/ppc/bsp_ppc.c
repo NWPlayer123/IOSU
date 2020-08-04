@@ -7,10 +7,8 @@ static BSP_PPC_CORE_PROPERTIES coreproperties[3]; //.bss:e6047850
 #define BSP_EE_PVR_LATTE 0x0010
 static short eePVRAddr = BSP_EE_PVR_HLYWD; //.data:e6043e4c
 
-static void(*pPPCExecStop)(void); //.bss:e6047838
-static void(*pPPCExecStart)(void); //.bss:e604783c
-
-
+static BSP_RVAL(*pPPCExecStop)(void); //.bss:e6047838
+static BSP_RVAL(*pPPCExecStart)(void); //.bss:e604783c
 
 static BSP_ATTRIBUTE ppcCore0Attributes[] = { { //.data:e6043e50
         .pName = "Exe",
@@ -238,6 +236,155 @@ BSP_RVAL bspPPCFillOutCoreProperties(uint ndx, BSP_PPC_CORE_PROPERTIES* core) {
             core->l2SetAssociativity = 2;
         }
     }
+
+    return BSP_RVAL_OK;
+}
+
+//.text:e6007c5c
+BSP_RVAL bspPPCGetPVR(BSP_PPC_PVR* pvr) {
+    IOSError ret;
+
+    ret = bspEepromRead(eePVRAddr, 1, &pvr->version);
+    if (ret != IOS_ERROR_OK) return BSP_RVAL_DEVICE_ERROR;
+
+    ret = bspEepromRead(eePVRAddr + 1, 1, &pvr->revision);
+    if (ret != IOS_ERROR_OK) return BSP_RVAL_DEVICE_ERROR;
+
+    return BSP_RVAL_OK;
+}
+
+//.text:e6007cb0
+BSP_RVAL bspPPC_ReadPVR(u32 instance, BSP_ATTRIBUTE* pAttribute, void* pReadData) {
+    BSP_PPC_PVR* pvr = (BSP_PPC_PVR*)pReadData;
+    return bspPPCGetPVR(pvr);
+}
+
+//.text:e6007d38
+BSP_RVAL bspPPC_WritePVR(u32 instance, BSP_ATTRIBUTE* pAttribute, void* pWrittenData) {
+    BSP_PPC_PVR* pvr = (BSP_PPC_PVR*)pWrittenData;
+    return bspPPCSetPVR(*pvr);
+}
+
+//.text:e6007808
+uint32_t bspPPCEnableEXI() {
+    *HW_AIP_PROT |= HW_AIP_PROT_ENAHBIOPI;
+    return *HW_AIP_PROT;
+}
+
+/* I feel I may have start and stop backwards */
+
+//.text:e6007ff0
+BSP_RVAL bspPPCExecStartLatte() {
+    *HW_RSTB &= ~(HW_RSTB_CPU | HW_RSTB_PI);
+    BSPSleep(0xf);
+    return BSP_RVAL_OK;
+}
+
+//.text:e600811c
+BSP_RVAL bspPPCExecStart() {
+    uint32_t rstb = *HW_RSTB;
+    *HW_RSTB = rstb & ~(HW_RSTB_CPU | HW_SRSTB_CPU);
+    BSPSleep(0xf);
+    uint32_t srstb = *HW_RSTB;
+    *HW_RSTB = srstb & ~HW_SRSTB_CPU | rstb & HW_SRSTB_CPU;
+    return BSP_RVAL_OK;
+}
+
+//.text:e6008154
+BSP_RVAL bspPPCExecStop() {
+    *HW_AIP_PROT &= ~HW_AIP_PROT_ENAHBIOPI;
+
+    uint32_t rstb = *HW_RSTB & ~(HW_RSTB_CPU | HW_SRSTB_CPU);
+    *HW_RSTB = rstb;
+    BSPSleep(0xf);
+    *HW_RSTB = rstb | HW_RSTB_CPU;
+    BSPSleep(0x96);
+    *HW_RSTB = rstb | HW_RSTB_CPU | HW_SRSTB_CPU;
+
+/*  Wait for PowerPC to set IPC flag X2, ack, and update the PVR in SEEPROM. */
+    for (int i = 0; i < 100; i++) {
+        uint32_t armctrl = *HW_IPC_ARMCTRL;
+        if (armctrl & HW_IPC_ARMCTRL_X2) {
+        /*  Clear X2.
+            Note that the original code is more like (a & X2 | X2), which as far
+            as I can tell is equivalent? Maybe it's an ARM thing. */
+            *HW_IPC_ARMCTRL = armctrl | HW_IPC_ARMCTRL_X2;
+        /*  Very clear X2, and set Y2 */
+            *HW_IPC_ARMCTRL = armctrl | (HW_IPC_ARMCTRL_X2 | HW_IPC_ARMCTRL_Y2);
+
+            bspPPCEnableEXI();
+
+        /*  Check EXI boot comms area for PowerPC PVR - if it's different to
+            expected, update the SEEPROM. Yes, really. */
+            BSP_PPC_PVR pvr;
+            bspPPCGetPVR(&pvr);
+        /*  What do you mean "this doesn't compile?" */
+            if (HW_EXI_BOOT[15] != pvr) {
+                bspPPCSetPVR(HW_EXI_BOOT[15]); //.text:e6007cb8
+            }
+
+            return BSP_RVAL_OK;
+        }
+        BSPSleep(10000);
+    }
+
+    bspPPCEnableEXI();
+    return BSP_RVAL_DEVICE_ERROR;
+}
+
+//.text:e600794c
+BSP_RVAL bspPPC_Exec(u32 instance, BSP_ATTRIBUTE* pAttribute, void* pWrittenData) {
+    BSP_RVAL ret;
+    BSP_HARDWARE_VERSION hwver = BSP_HARDWARE_VERSION_UNKNOWN;
+    bspMethodGetHardwareVersion(&hwver);
+
+    uint8_t cmd = *(uint8_t*)pWrittenData;
+
+    if (cmd == 1) {
+        if (!pPPCExecStop) return BSP_RVAL_UNSUPPORTED_METHOD;
+        return pPPCExecStop();
+    }
+    if (cmd == 2) {
+        if (!pPPCExecStart) return BSP_RVAL_UNSUPPORTED_METHOD;
+        return pPPCExecStart();
+    }
+
+    return BSP_RVAL_INVALID_PARAMETER;
+}
+
+BSP_RVAL bspPPC_Read60XeDataStreaming(u32 instance, BSP_ATTRIBUTE* pAttribute, void* pReadData) {
+    BSP_RVAL ret;
+    BSP_HARDWARE_VERSION hwver;
+
+    ret = bspMethodGetHardwareVersion(&hwver);
+    if (ret != BSP_RVAL_OK) return ret;
+
+    if (!BSP_IS_LATTE(hwver)) return BSP_RVAL_UNSUPPORTED_METHOD;
+
+    int8_t streaming = !(*LT_60XE_CFG & LT_60XE_CFG_STREAMING);
+    *(int8_t*)pReadData = streaming;
+
+    return BSP_RVAL_OK;
+}
+
+BSP_RVAL bspPPC_Write60XeDataStreaming(u32 instance, BSP_ATTRIBUTE* pAttribute, void* pWrittenData) {
+    BSP_RVAL ret;
+    BSP_HARDWARE_VERSION hwver;
+
+    ret = bspMethodGetHardwareVersion(&hwver);
+    if (ret != BSP_RVAL_OK) return ret;
+
+    if (!BSP_IS_LATTE(hwver)) return BSP_RVAL_UNSUPPORTED_METHOD;
+
+    uint32_t reg = *LT_60XE_CFG;
+    *LT_60XE_CFG = reg | LT_60XE_CFG_LATCH;
+    BSPSleep(10);
+
+    uint8_t cmd = *(uint8_t*)pWrittenData;
+    uint32_t streaming = (cmd == 1) ? 0 : LT_60XE_CFG_STREAMING;
+
+    *LT_60XE_CFG = reg | streaming | LT_60XE_CFG_LATCH;
+    *LT_60XE_CFG = (reg | streaming) & ~LT_60XE_CFG_LATCH;
 
     return BSP_RVAL_OK;
 }

@@ -40,4 +40,9 @@
 #define LT_IOP2X ((uint32_t*)0x0d8005bc)
     #define LT_IOP2X_ENABLE 0x04
 
+#define LT_60XE_CFG ((uint32_t*)0x0d800640)
+    #define LT_60XE_CFG_STREAMING REG_BIT(3, 1, 1)
+    //entirely made up, could be not a latch
+    #define LT_60XE_CFG_LATCH REG_BIT(12, 1, 1)
+
 #define HW_EXI_BOOT ((uint32_t[16])0x0d806840)

@@ -42,3 +42,9 @@ typedef struct BSP_PPC_CORE_PROPERTIES {
     uint8_t coreActive;
 } BSP_PPC_CORE_PROPERTIES;
 //sizeof(BSP_PPC_CORE_PROPERTIES) = 0x15
+
+typedef struct BSP_PPC_PVR {
+    uint16_t version;
+    uint16_t revision;
+} BSP_PPC_PVR;
+//sizeof(BSP_PPC_PVR) = 0x4
