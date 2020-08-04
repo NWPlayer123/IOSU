@@ -266,7 +266,7 @@ BSP_RVAL bspMethodGetHardwareVersion(BSP_HARDWARE_VERSION *version) {
     int ret;
 
     *version = bspHardwareVersion;
-    if (!bspHardwareVersion) return 0;
+    if (bspHardwareVersion) return BSP_RVAL_OK;
 
     ret = determineWoodBasedHardwareVersion(version, true); //.text:E600B41C - see below
     if (ret != BSP_RVAL_OK) return ret;
@@ -282,23 +282,23 @@ BSP_RVAL bspMethodGetHardwareVersion(BSP_HARDWARE_VERSION *version) {
 
         ret = bspMethodReadEEBoardConfig(&bspBoardConfig);
         if (ret != BSP_RVAL_OK) {
-            *version |= 0x11; //EV_Y board
+            *version |= BSP_VARIANT_EV_Y;
         } else {
             switch (bspBoardConfig.boardType) {
-                case 0x4346:
-                    *version |= 0x28; //CAFE board
+                case 0x4346: //"CF"
+                    *version |= BSP_VARIANT_CAFE;
                     break;
-                case 0x4354:
-                    *version |= 0x20; //CAT board
+                case 0x4354: //"CT"
+                    *version |= BSP_VARIANT_CAT;
                     break;
-                case 0x4556:
-                    *version |= 0x10; //EV board
+                case 0x4556: //"EV"
+                    *version |= BSP_VARIANT_EV;
                     break;
-                case 0x4944:
-                    *version |= 0x21; //unknown? newer than c2w symbols?
+                case 0x4944: //"ID"
+                    *version |= BSP_VARIANT_ID; //not in c2w symbols
                     break;
-                case 0x4948:
-                    *version |= 0x29; //also unknown
+                case 0x4948: //"IH"
+                    *version |= BSP_VARIANT_IH; //not in c2w symbols
                     break;
             }
         }

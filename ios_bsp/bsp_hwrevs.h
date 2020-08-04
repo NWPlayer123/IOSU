@@ -50,9 +50,6 @@ enum BSP_LATTE_REVS {
 //BSP_HARDWARE_VERSION_LATTE_*
 #define BSP_IS_LATTE(hwver) ((hwver & 0x0F000000) != 0)
 
-//BSP_HARDWARE_VERSION_LATTE_*_EV_Y
-#define BSP_IS_EV_Y(hwver) ((hwver & 0xFFFF) == 0x0011)
-
 //BSP_HARDWARE_VERSION_BOLLYWOOD
 //BSP_HARDWARE_VERSION_BOLLYWOOD_PROD_FOR_WII
 #define BSP_IS_BOLLYWOOD(hwver) ((hwver >> 24) == 0x20)
@@ -65,5 +62,35 @@ enum BSP_LATTE_REVS {
 
 //BSP_HARDWARE_VERSION_HOLLYWOOD_ENG_SAMPLE_1
 #define BSP_IS_HOLLYWOOD_ES1(hwver) ((hwver >> 24) == 0x00)
+
+/* Tempting to assume these are numbered in order of creation, though ID is
+ * missing from cafe2wii, implying it was added later.
+ * My best guess:
+ * - 0x10-0x17: evaluation boards, possibly missing SEEPROM/BoardConfig
+ * - 0x18-0x1F: ?
+ * - 0x20-0x27: Devkit boards
+ * - 0x28-0x2F: Retail-like boards */
+enum BSP_VARIANTS {
+    BSP_VARIANT_EV   = 0x0010,
+    BSP_VARIANT_EV_Y = 0x0011, //missing BoardConfig?
+    BSP_VARIANT_CAT  = 0x0020, //wiiubrew: "Devkit"
+    BSP_VARIANT_ID   = 0x0021, //not in c2w
+    BSP_VARIANT_CAFE = 0x0028, //wiiubrew: "Retail/Kiosk"
+    BSP_VARIANT_IH   = 0x0029, //wiiubrew: "WUIH Internal retail" - not in c2w
+};
+
+#define BSP_GET_VARIANT(hwver) (hwver & 0xFFFF)
+
+//BSP_HARDWARE_VERSION_LATTE_*_EV
+#define BSP_IS_EV(hwver) (BSP_GET_VARIANT(hwver) == BSP_VARIANT_EV)
+
+//BSP_HARDWARE_VERSION_LATTE_*_EV_Y
+#define BSP_IS_EV_Y(hwver) (BSP_GET_VARIANT(hwver) == BSP_VARIANT_EV_Y)
+
+//BSP_HARDWARE_VERSION_LATTE_*_CAT
+#define BSP_IS_CAT(hwver) (BSP_GET_VARIANT(hwver) == BSP_VARIANT_CAT)
+
+//No known hardware
+#define BSP_IS_ID(hwver) (BSP_GET_VARIANT(hwver) == BSP_VARIANT_ID)
 
 #endif //_BSP_HWREVS_H_
