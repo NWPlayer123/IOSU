@@ -1,32 +1,43 @@
 #pragma once
 
+#define REG_BIT(bit, val, width) (val << (dev * width))
+
 // https://wiiubrew.org/wiki/Hardware/Latte_Registers#HW_IOPWRCTRL
 #define HW_IOPWRCTRL ((uint32_t*)0x0d8001dc)
-    #define HW_IOPWRCTRL_BIT(dev, val) (val << (dev * 2))
     #define HW_IOPWRCTRL_MASK 2
-    #define HW_IOPWRCTRL_DI(val)    HW_IOPWRCTRL_BIT(3, val)
-    #define HW_IOPWRCTRL_VI(val)    HW_IOPWRCTRL_BIT(4, val)
-    #define HW_IOPWRCTRL_AI(val)    HW_IOPWRCTRL_BIT(6, val)
-    #define HW_IOPWRCTRL_SI(val)    HW_IOPWRCTRL_BIT(9, val)
-    #define HW_IOPWRCTRL_SDIO(val)  HW_IOPWRCTRL_BIT(10, val)
-    #define HW_IOPWRCTRL_FLA(val)   HW_IOPWRCTRL_BIT(11, val)
-    #define HW_IOPWRCTRL_GPIO(val)  HW_IOPWRCTRL_BIT(12, val)
-    #define HW_IOPWRCTRL_GPIOB(val) HW_IOPWRCTRL_BIT(13, val)
+    #define HW_IOPWRCTRL_DI(val)    REG_BIT(3, val, HW_IOPWRCTRL_MASK)
+    #define HW_IOPWRCTRL_VI(val)    REG_BIT(4, val, HW_IOPWRCTRL_MASK)
+    #define HW_IOPWRCTRL_AI(val)    REG_BIT(6, val, HW_IOPWRCTRL_MASK)
+    #define HW_IOPWRCTRL_SI(val)    REG_BIT(9, val, HW_IOPWRCTRL_MASK)
+    #define HW_IOPWRCTRL_SDIO(val)  REG_BIT(10, val, HW_IOPWRCTRL_MASK)
+    #define HW_IOPWRCTRL_FLA(val)   REG_BIT(11, val, HW_IOPWRCTRL_MASK)
+    #define HW_IOPWRCTRL_GPIO(val)  REG_BIT(12, val, HW_IOPWRCTRL_MASK)
+    #define HW_IOPWRCTRL_GPIOB(val) REG_BIT(13, val, HW_IOPWRCTRL_MASK)
 
 // https://wiiubrew.org/wiki/Hardware/Latte_Registers#HW_IOSTRCTRL0
 #define HW_IOSTRCTRL0 ((uint32_t*)0x0d8001e0)
-    #define HW_IOSTRCTRL0_BIT(dev, val) (val << (dev * 3))
     #define HW_IOSTRCTRL0_MASK 3
-    #define HW_IOSTRCTRL0_AI(val) HW_IOSTRCTRL0_BIT(0, val)
-    #define HW_IOSTRCTRL0_SI(val) HW_IOSTRCTRL0_BIT(2, val)
-    #define HW_IOSTRCTRL0_DI(val) HW_IOSTRCTRL0_BIT(6, val)
-    #define HW_IOSTRCTRL0_VI(val) HW_IOSTRCTRL0_BIT(7, val)
+    #define HW_IOSTRCTRL0_AI(val) REG_BIT(0, val, HW_IOSTRCTRL0_MASK)
+    #define HW_IOSTRCTRL0_SI(val) REG_BIT(2, val, HW_IOSTRCTRL0_MASK)
+    #define HW_IOSTRCTRL0_DI(val) REG_BIT(6, val, HW_IOSTRCTRL0_MASK)
+    #define HW_IOSTRCTRL0_VI(val) REG_BIT(7, val, HW_IOSTRCTRL0_MASK)
 
 // https://wiiubrew.org/wiki/Hardware/Latte_Registers#HW_IOSTRCTRL0
 #define HW_IOSTRCTRL1 ((uint32_t*)0x0d8001e4)
-    #define HW_IOSTRCTRL1_BIT(dev, val) (val << (dev * 3))
     #define HW_IOSTRCTRL1_MASK 3
-    #define HW_IOSTRCTRL1_SDIO(val) HW_IOSTRCTRL1_BIT(7, val)
+    #define HW_IOSTRCTRL1_SDIO(val) REG_BIT(7, val, HW_IOSTRCTRL1_MASK)
+
+// https://wiibrew.org/wiki/Hardware/Hollywood_Registers#HW_AIPPROT
+#define HW_AIP_PROT ((uint32_t*)0x0d800070)
+    #define HW_AIP_PROT_ENAHBIOPI REG_BIT(0, 1, 1)
+
+// https://wiibrew.org/wiki/Hardware/Hollywood_Registers#HW_RESETS
+#define HW_RSTB ((uint32_t*)0x0d800194)
+    #define HW_RSTB_CPU  REG_BIT(4, 1, 1)
+    #define HW_SRSTB_CPU REG_BIT(5, 1, 1)
+    #define HW_RSTB_PI   REG_BIT(9, 1, 1)
 
 #define LT_IOP2X ((uint32_t*)0x0d8005bc)
     #define LT_IOP2X_ENABLE 0x04
+
+#define HW_EXI_BOOT ((uint32_t[16])0x0d806840)
