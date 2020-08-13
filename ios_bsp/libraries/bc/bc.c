@@ -1,5 +1,30 @@
 #include <eeprom_drv/eeprom.h>
 
+static int bc_log_handle = -1; //.data:e604696c
+static bool bc_initialised; //.bss:e60479d0
+
+//.text:e600c88c
+IOSError bcInit() {
+    IOSError err;
+
+    bc_log_handle = log_open("BC", 0, 1);
+
+    if (bc_initialised == false) {
+        err = eepromDrvInit(0);
+        if (err == IOS_ERROR_OK) {
+            err = eepromDrvOpen(0);
+            if (err == IOS_ERROR_OK) {
+                bc_initialised = true;
+            }
+        }
+
+        crc32MakeTable();
+        return err;
+    }
+
+    return IOS_ERROR_OK;
+}
+
 //.text:e600c7ac
 IOSError bcGet(BC_CONFIG* config) {
     IOSError err;
