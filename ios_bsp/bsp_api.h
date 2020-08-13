@@ -12,7 +12,7 @@ typedef struct BSP_ATTRIBUTE_TAG {
     BSP_RVAL (* writeMethod)(u32, struct BSP_ATTRIBUTE_TAG *, void *);
     BSP_RVAL (* initMethod)(u32, struct BSP_ATTRIBUTE_TAG *, void *, ulong);
     BSP_RVAL (* shutdownMethod)(u32, struct BSP_ATTRIBUTE_TAG *);
-    pointer field_0x28;
+    u32 attribute_specific;
 } BSP_ATTRIBUTE;
 
 typedef u32 BSP_ENTITY_VERSION;
