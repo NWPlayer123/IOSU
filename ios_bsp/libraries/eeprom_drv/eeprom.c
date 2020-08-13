@@ -9,7 +9,7 @@ IOSError eepromDrvReadWord(int eeprom_ndx, uint8_t addr, uint16_t* data) {
     }
 
     eepromCtx* ctx = eepromContexts[eeprom_ndx];
-    if (ctx->status != 2) {
+    if (ctx->status != EEPROM_STATUS_OPEN) {
         return IOS_ERROR_NOT_READY;
     }
 
@@ -40,7 +40,7 @@ IOSError eepromDrvWriteWord(int eeprom_ndx, uint8_t addr, uint16_t data) {
     }
 
     eepromCtx* ctx = eepromContexts[eeprom_ndx];
-    if (ctx->status != 2) {
+    if (ctx->status != EEPROM_STATUS_OPEN) {
         return IOS_ERROR_NOTREADY;
     }
 
@@ -60,7 +60,7 @@ IOSError eepromDrvSetWriteControl(int eeprom_ndx, EEPROM_WRITE_CONTROL control) 
     }
 
     eepromCtx* ctx = eepromContexts[eeprom_ndx];
-    if (ctx->status != 2) {
+    if (ctx->status != EEPROM_STATUS_OPEN) {
         return IOS_ERROR_NOTREADY;
     }
 
@@ -101,19 +101,19 @@ IOSError eepromDrvInit(int eeprom_ndx) {
     err |= eepromDrvSetDO(ctx, 0);
     if (err != IOS_ERROR_OK) return err;
 
-    ctx->status = 1;
+    ctx->status = EEPROM_STATUS_INITIALISED;
     return IOS_ERROR_OK;
 }
 
-/*  TODO: name this better */
 //.text:e600ce0c
-IOSError eepromDrvInit2(int eeprom_ndx) {
+IOSError eepromDrvOpen(int eeprom_ndx) {
     eepromCtx* ctx = eepromContexts[eeprom_ndx];
     if (!(eeprom_ndx < NUM_EEPROMS)) {
         return IOS_ERROR_MAX;
     }
 
-    if (ctx->status != 3 && ctx->status != 1) {
+    if (ctx->status != EEPROM_STATUS_CLOSED &&
+        ctx->status != EEPROM_STATUS_INITIALISED) {
         return IOS_ERROR_NOT_READY;
     }
 
@@ -121,7 +121,7 @@ IOSError eepromDrvInit2(int eeprom_ndx) {
     eepromDrvSetSK(ctx, 0);
     eepromDrvSetDO(ctx, 0);
 
-    ctx->status = 2;
+    ctx->status = EEPROM_STATUS_OPEN;
     return IOS_ERROR_OK;
 }
 
@@ -131,7 +131,7 @@ IOSError eepromDrvShutdown(int eeprom_ndx) {
         return IOS_ERROR_MAX;
     }
 
-    if (ctx->status != 2) {
+    if (ctx->status != EEPROM_STATUS_OPEN) {
         return IOS_ERROR_NOT_READY;
     }
 
@@ -139,6 +139,6 @@ IOSError eepromDrvShutdown(int eeprom_ndx) {
     eepromDrvSetSK(ctx, 0);
     eepromDrvSetDO(ctx, 0);
 
-    ctx->status = 3;
+    ctx->status = EEPROM_STATUS_CLOSED;
     return IOS_ERROR_OK;
 }

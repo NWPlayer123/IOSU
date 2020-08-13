@@ -1,5 +1,12 @@
 #pragma once
 
+enum EEPROM_STATUS {
+    EEPROM_STATUS_UNINITIALISED = 0,
+    EEPROM_STATUS_INITIALISED   = 1,
+    EEPROM_STATUS_OPEN          = 2,
+    EEPROM_STATUS_CLOSED        = 3,
+};
+
 #define NUM_EEPROMS 1
 typedef struct {
     int status;

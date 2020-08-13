@@ -92,7 +92,7 @@ BSP_RVAL bspEE_control_init(u32 instance, BSP_ATTRIBUTE* pAttribute, void* pInit
     err = eepromDrvInit(0);
     if (err != IOS_ERROR_OK) return BSP_RVAL_DEVICE_ERROR;
 
-    err = eepromDrvInit2(0);
+    err = eepromDrvOpen(0);
     if (err != IOS_ERROR_OK) return BSP_RVAL_DEVICE_ERROR;
 
     err = eepromDrvSetWriteControl(0, EEPROM_WRITE_DISABLE);
