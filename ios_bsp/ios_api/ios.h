@@ -23,4 +23,10 @@ IOSError IOS_DeviceAssosciate(const char* device, int id);
 typedef int32_t IOSCrossProcessHeap;
 IOSCrossProcessHeap IOS_CreateCrossProcessHeap(size_t size);
 
+typedef IOSSemaphore int32_t;
+IOSError IOS_CreateSemaphore(int32_t maxCount, int32_t initialCount);
+IOSError IOS_WaitSemaphore(IOSSemaphore id, bool tryWait);
+IOSError IOS_SignalSempahore(IOSSemaphore id);
+IOSError IOS_DestroySempahore(IOSSemaphore id);
+
 void IOS_SetBSPReady();
