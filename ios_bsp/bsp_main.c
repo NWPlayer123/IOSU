@@ -3,7 +3,13 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#include "ios_api/ios.h"
+#include <ios_api/ios.h>
+#include <bc.h>
+#include <log.h>
+
+#include "latte/latte.h"
+
+#include <bsp_entity.h>
 #include "bsp_public_api.h"
 #include "bsp_hwrevs.h"
 
@@ -17,6 +23,10 @@ IOSMessageQueue devbsp_msgqueue_id; //.bss:E6047100
 fd_t bsp_fdtable[0x20]; //.bss:E6047104 - E6047200 inclusive
 int log_fd = -1; //.data:E6042000
 
+void hello();
+BSP_RVAL bspInstall();
+BSP_RVAL InitASICVersion(BSP_HARDWARE_VERSION* version);
+
 /*  .text:E6000000
     Entry point. No obvious arguments/return values.
     Name taken from log output */
@@ -24,11 +34,11 @@ void main() {
 /*  ==================================== initialisation bit */
     int ret, bsperr/*r9*/, ioserr/*r8*/;
 
-    sub_E600E804();
+    hello();
     ret = IOS_CreateCrossProcessHeap(0x10000); //UND #0x250, .text:E600FA44
     if (ret < IOS_ERROR_OK) {
     /*  Not 100% sure if this is a generic print or an error reporter */
-        bsp_print("BSP: IOS_CreateCrossProcessHeap ERROR, rval = %d\n", ret); //.text:E600EC28
+        log_debug_printf("BSP: IOS_CreateCrossProcessHeap ERROR, rval = %d\n", ret); //.text:E600EC28
         return;
     }
 
@@ -55,7 +65,7 @@ void main() {
         goto report_err;
     }
 
-    ret = init_stuff(); //.text:E6000D78, see below
+    ret = bspInstall(); //.text:E6000D78, see below
     if (ret) {
         ioserr = 0;
         bsperr = ret;
@@ -127,19 +137,19 @@ void main() {
                     }
                 }
                 case BSP_IOCTL_METHOD_QUERY: {
-                    result = bspMethodQuery(args->entityName, __builtin_bswap32(args->instance), &args->attributeName, __builtin_bswap32(args->size), outPtr, bsp_fdtable[fd].permissions); //.text:e6000a90
+                    result = bspMethodQuery(args->entityName, __builtin_bswap32(args->instance), args->attributeName, __builtin_bswap32(args->size), outPtr, bsp_fdtable[fd].permissions); //.text:e6000a90
                 }
                 case BSP_IOCTL_METHOD_READ: {
-                    result = bspMethodRead(args->entityName, __builtin_bswap32(args->instance), &args->attributeName, __builtin_bswap32(args->size), outPtr, bsp_fdtable[fd].permissions); //.text:e6000a14
+                    result = bspMethodRead(args->entityName, __builtin_bswap32(args->instance), args->attributeName, __builtin_bswap32(args->size), outPtr, bsp_fdtable[fd].permissions); //.text:e6000a14
                 }
                 case BSP_IOCTL_METHOD_WRITE: {
-                    result = bspMethodWrite(args->entityName, __builtin_bswap32(args->instance), &args->attributeName, __builtin_bswap32(args->size), &args->inData, bsp_fdtable[fd].permissions); //.text:e6000998
+                    result = bspMethodWrite(args->entityName, __builtin_bswap32(args->instance), args->attributeName, __builtin_bswap32(args->size), &args->inData, bsp_fdtable[fd].permissions); //.text:e6000998
                 }
                 case BSP_IOCTL_METHOD_INIT: {
-                    result = bspMethodInit(args->entityName, __builtin_bswap32(args->instance), &args->attributeName, __builtin_bswap32(args->size), &args->inData, bsp_fdtable[fd].permissions); //.text:e6000890
+                    result = bspMethodInit(args->entityName, __builtin_bswap32(args->instance), args->attributeName, __builtin_bswap32(args->size), &args->inData, bsp_fdtable[fd].permissions); //.text:e6000890
                 }
                 case BSP_IOCTL_METHOD_SHUTDOWN: {
-                    result = bspMethodShutdown(args->entityName, __builtin_bswap32(args->instance), &args->attributeName, bsp_fdtable[fd].permissions); //.text:e6000830
+                    result = bspMethodShutdown(args->entityName, __builtin_bswap32(args->instance), args->attributeName, bsp_fdtable[fd].permissions); //.text:e6000830
                 }
                 case BSP_IOCTL_GET_CONSOLE_TYPE: {
                     if (__builtin_bswap32(args->size) != 4) {
@@ -185,29 +195,52 @@ report_err:
 #endif
 }
 
-unsigned int init_stuff() {
-    unsigned int ret /*r4|r5*/;
+//.text:e600e804
+void hello() {
+    IOSProcessId process;
+    char name[6];
+    char build_date[18];
+
+    memcpy(name,"error",6);
+#ifdef ACCURATE
+    int utilisation = 37;
+    memcpy(build_date,"07/28/15 19:23:58",0x12);
+#else
+    #error Not implemented, use -DACCURATE
+    //int utilisation = 37;
+    //memcpy(build_date,"07/28/15 19:23:58",0x12);
+#endif
+
+    process = IOS_GetCurrentProcessId();
+    IOS_GetProcessName(process,name);
+    log_debug_printf("%s: Built %s, Image Utilization %d%%.\n",name,build_date,0x25);
+    return;
+}
+
+//.text:e6000d78
+BSP_RVAL bspInstall() {
+    BSP_RVAL ret /*r4|r5*/;
     ret = sub_E6000CC4();
-    ret |= sub_E600580C(); //bspResetInstall
-    ret |= sub_E6006BA4(); //bspRAMInstall
-    ret |= sub_E6006A3C(); //bspDIInstall
-    ret |= sub_E6007D5C(); //bspPPCInstall
-    ret |= sub_E6004E68(); //bspSDIOInstall
-    ret |= sub_E6003198(); //bspVIInstall
-    ret |= sub_E6000F80(); //bspAIInstall
-    ret |= sub_E6002800(); //bspUSBInstall
-    ret |= sub_E60068CC(); //bspSIInstall
-    ret |= sub_E6005D5C(); //bspCortadoInstall
-    ret |= sub_E6008C0C(); //bspSATAInstall
-    ret |= sub_E6009584(); //bspFLAInstall
-    ret |= sub_E60095C4(); //bspSMCInstall
-    ret |= sub_E60099CC(); //bspRTCInstall
-    ret |= sub_E6009D68(); //bspCCRHInstall
-    ret |= sub_E600A2B0(); //bspWIFIInstall
-    ret |= sub_E60040D8(); //bspGFXInstall
-    ret |= sub_E600A398(); //bspEEInstall
-    ret |= sub_E600B0D8(); //bspDDRPerfInstall
-    ret |= sub_E600B864(); //bspDISPLAYInstall
+    ret |= bspResetInstall(); //sub_E600580C
+    ret |= bspRAMInstall(); //.text:E6006BA4
+    ret |= bspDIInstall(); //.text:E6006A3C
+    ret |= bspPPCInstall(); //.text:E6007D5C
+    ret |= bspSDIOInstall(); //.text:E6004E68
+    ret |= bspVIInstall(); //.text:E6003198
+    ret |= bspAIInstall(); //.text:E6000F80
+    ret |= bspUSBInstall(); //.text:E6002800
+    ret |= bspSIInstall(); //.text:E60068CC
+    ret |= bspCortadoInstall(); //.text:E6005D5C
+    ret |= bspSATAInstall(); //.text:E6008C0C
+    ret |= bspFLAInstall(); //.text:E6009584
+    ret |= bspSMCInstall(); //.text:E60095C4
+    ret |= bspRTCInstall(); //.text:E60099CC
+    ret |= bspCCRHInstall(); //.text:E6009D68
+    ret |= bspWIFIInstall(); //.text:E600A2B0
+    ret |= bspGFXInstall(); //.text:E60040D8
+    ret |= bspEEInstall(); //.text:E600A398
+    ret |= bspDDRPerfInstall(); //.text:E600B0D8
+    ret |= bspDISPLAYInstall(); //.text:E600B864
     return ret;
 }
 
@@ -221,7 +254,7 @@ BC_CONFIG bspBoardConfig; //.bss:E604798C
 /*  Some kind of Wood hardware init?
  *  .text:E6000CC4
  */
-int sub_E6000CC4() {
+int bspInitEssential() {
     int error /*r4|r5*/;
 
     bspEntityCount = 0;
@@ -229,8 +262,8 @@ int sub_E6000CC4() {
 
     log_fd = log_open("BSP", 1, 3); //.text:E604697C; name from log output
 
-    *LT_RESETS_COMPAT |= 0xD0000; //acc. to WiiBrew, this is DDR2, I and DDR1
-    *LT_EXICTRL = (*LT_EXICTRL & ~1) | 1; //enable EXI
+    *HW_RSTB |= HW_RSTB_IOEXI | HW_RSTB_IOMEM | HW_RSTB_IOPI;
+    *HW_AIP_PROT |= HW_AIP_PROT_ENAHBIOPI; //enable EXI
 
     error  = InitASICVersion(&bspHardwareVersion); //.text:E600B5B4 - see below
     error |= bspGPIOInstall(); //see below
@@ -242,193 +275,39 @@ int sub_E6000CC4() {
     return error;
 }
 
-/*  Installs GPIO entity
- *  .text:e6006800
- */
-int bspGPIOInstall() {
-    int ret;
-    BSP_HARDWARE_VERSION hwver;
-
-    ret = bspMethodGetHardwareVersion(&hwver); //.text:E600B62C - see below
-    if (ret != BSP_RVAL_OK) return ret;
-
-    if ((hwver & 0xF0000000) == 0) {
-        return BSP_RVAL_UNKNOWN_HARDWARE_VERSION;
-    }
-
-    return bspRegisterEntity(&gpio_latte_entity);
-}
-
-/*  Something to do with getting the hardware version?
-*   .text:e600b62c
-*/
-BSP_RVAL bspMethodGetHardwareVersion(BSP_HARDWARE_VERSION *version) {
+// .text:e600b5b4
+BSP_RVAL InitASICVersion(BSP_HARDWARE_VERSION* version) {
     int ret;
 
     *version = bspHardwareVersion;
-    if (bspHardwareVersion) return BSP_RVAL_OK;
-
-    ret = determineWoodBasedHardwareVersion(version, true); //.text:E600B41C - see below
-    if (ret != BSP_RVAL_OK) return ret;
-
-    if (*version == BSP_HARDWARE_VERSION_BOLLYWOOD_PROD_FOR_WII) {
-        ret = determineLatteBasedHardwareVersion(version);
-        if (ret != BSP_RVAL_OK) {
-            bspHardwareVersion = *version;
-            return BSP_RVAL_OK;
-        }
-
-        *version &= 0xFFFF0000;
-
-        ret = bspMethodReadEEBoardConfig(&bspBoardConfig);
-        if (ret != BSP_RVAL_OK) {
-            *version |= BSP_VARIANT_EV_Y;
-        } else {
-            switch (bspBoardConfig.boardType) {
-                case 0x4346: //"CF"
-                    *version |= BSP_VARIANT_CAFE;
-                    break;
-                case 0x4354: //"CT"
-                    *version |= BSP_VARIANT_CAT;
-                    break;
-                case 0x4556: //"EV"
-                    *version |= BSP_VARIANT_EV;
-                    break;
-                case 0x4944: //"ID"
-                    *version |= BSP_VARIANT_ID; //not in c2w symbols
-                    break;
-                case 0x4948: //"IH"
-                    *version |= BSP_VARIANT_IH; //not in c2w symbols
-                    break;
-            }
-        }
-    }
-
-    bspHardwareVersion = *version;
-    return BSP_RVAL_OK;
-}
-
-/*  Something to do with getting the Wood version?
-*   .text:e600b5b4
-*/
-int InitASICVersion(unsigned int* woodver) {
-    int ret;
-
-    *woodver = bspHardwareVersion;
     if (bspHardwareVersion) return 0;
 
-    ret = determineWoodBasedHardwareVersion(woodver, false); //.text:E600B41C - see below
+    ret = determineWoodBasedHardwareVersion(version, false); //.text:E600B41C - see below
     if (ret) return ret;
 
-    if (*woodver == BSP_HARDWARE_VERSION_BOLLYWOOD_PROD_FOR_WII) {
-        if (GetLatteHardwareVersion(woodver) == 0) {
-            *woodver = *woodver & 0xFFFF0000 | 0x11;
+    if (*version == BSP_HARDWARE_VERSION_BOLLYWOOD_PROD_FOR_WII) {
+        if (determineLatteBasedHardwareVersion(version) == 0) {
+            *version = *version & 0xFFFF0000 | 0x11;
          /* This appears to force a EV_Y board? */
         }
     }
     return 0;
 }
 
-unsigned short word_E6047988; //.bss:E6047988. IDA reckons it's a byte.
-
-/*  .text:E600B41C
-    Decodes LT_ASICREV_ACR aka HW_CHIPREVID; placing the result in woodver.
-    Doesn't seem to be an ASICREV_ACR revision for HOLLYWOOD_PROD_FOR_WII or
-    HOLLYWOOD_CORTADO_ESPRESSO, this is determined from other factors */
-BSP_RVAL determineWoodBasedHardwareVersion(BSP_HARDWARE_VERSION* version, bool fullCheck) {
-    int ret;
-
-    switch (*HW_CHIPREVID & 0xFF /*VERLO: revision*/) {
-        case 0x00: {
-            *version = BSP_HARDWARE_VERSION_HOLLYWOOD_ENG_SAMPLE_1;
-            return BSP_RVAL_OK;
-        }
-        case 0x10: {
-            *version = BSP_HARDWARE_VERSION_HOLLYWOOD_ENG_SAMPLE_2;
-            return BSP_RVAL_OK;
-        }
-        case 0x11: {
-            *version = BSP_HARDWARE_VERSION_CORTADO;
-            if (!fullCheck) return BSP_RVAL_OK;
-
-            unsigned int isCortado;
-            ret = CheckCortado(&isCortado); //.text:E6005818
-            if (ret) return BSP_RVAL_OK;
-
-            if (!isCortado) {
-                *version = BSP_HARDWARE_VERSION_HOLLYWOOD_PROD_FOR_WII;
-                return BSP_RVAL_OK;
-            }
-
-            sub_E6007C5C(&word_E6047988);
-            *version = BSP_HARDWARE_VERSION_CORTADO;
-            if (word_E6047988 == 0x7001) {
-                *version = BSP_HARDWARE_VERSION_CORTADO_ESPRESSO;
-            }
-            return BSP_RVAL_OK;
-        }
-        case 0x20: {
-            *version = BSP_HARDWARE_VERSION_BOLLYWOOD;
-            return BSP_RVAL_OK;
-        }
-        case 0x21: {
-            *version = BSP_HARDWARE_VERSION_BOLLYWOOD_PROD_FOR_WII;
-            return BSP_RVAL_OK;
-        }
-        default: {
-            *version = BSP_HARDWARE_VERSION_UNKNOWN;
-            return BSP_RVAL_UNKNOWN_HARDWARE_VERSION;
-        }
-    }
-}
-
-//.text:E600B328
-BSP_RVAL determineLatteBasedHardwareVersion(BSP_HARDWARE_VERSION* version) {
-    int ret;
-
-    uint32_t lt_chiprev = *LT_CHIPREVID;
-    if (lt_chiprev & 0xFFFF0000 != 0xCAFE0000) {
-        return BSP_RVAL_UNKNOWN_HARDWARE_VERSION;
-    }
-
-    *version &= 0x000FFFFF;
-
-    switch (lt_chiprev & 0xFF) /* VERLO */ {
-        case 0x10:
-            *version |= 0x21100000; //Latte A11
-            return BSP_RVAL_OK;
-        case 0x18:
-            *version |= 0x21200000; //Latte A12
-            return BSP_RVAL_OK;
-        case 0x21:
-            *version |= 0x22100000; //Latte A2x
-            return BSP_RVAL_OK;
-        case 0x30:
-            *version |= 0x23100000; //Latte A3x
-            return BSP_RVAL_OK;
-        case 0x40:
-            *version |= 0x24100000; //Latte A4x
-            return BSP_RVAL_OK;
-        case 0x50:
-            *version |= 0x25100000; //Latte A5x
-            return BSP_RVAL_OK;
-        default:
-            *version |= 0x26100000; //Latte B1x
-            return BSP_RVAL_OK;
-    }
-}
+BSP_SYSTEM_CLOCK_INFO BSPDefaultClockdata = {0,0}; //.rodata:e6040263
 
 //.text:e6001920
 BSP_RVAL bspGetSystemClockInfo(BSP_SYSTEM_CLOCK_INFO* clock) {
+    BSP_RVAL ret;
     memcpy(clock, &BSPDefaultClockdata, sizeof(*clock));
 
     BSP_HARDWARE_VERSION hwver;
     ret = bspMethodGetHardwareVersion(&hwver);
-    if (ret != BSP_RVAL_OK) return;
+    if (ret != BSP_RVAL_OK) return ret;
 
     if (BSP_IS_HOLLYWOOD(hwver) ||
         BSP_IS_HOLLYWOOD_ES1(hwver)) {
-        if (*HW_CLOCKS & HW_CLOCKS_SPEED(1)) {
+        if (*HW_CLOCKS & HW_CLOCKS_SPEED) {
             clock->systemClockFrequency = 162000000;
         } else {
             clock->systemClockFrequency = 243000000;
@@ -449,10 +328,10 @@ BSP_RVAL bspGetSystemClockInfo(BSP_SYSTEM_CLOCK_INFO* clock) {
             clock->systemClockFrequency = 243000000;
         }
         //finish inline
-        if (*LT_PLLSYS & 1) {
+        if (*LT_PLLSYS & LT_PLLSYS_HALFSPEED) {
             clock->systemClockFrequency /= 2;
         }
     }
     clock->timerFrequency = clock->systemClockFrequency / 128;
-    return;
+    return BSP_RVAL_OK;
 }

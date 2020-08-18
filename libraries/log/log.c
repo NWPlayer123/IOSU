@@ -1,9 +1,16 @@
+#include "log.h"
+
+#include <gctypes.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+
 #include <ios_api/ios.h>
 
 IOSSemaphore log_mutex = -1; //.bsp.data:e604697c
 
 typedef struct log_fd {
-    char[16] name;
+    char name[16];
     int unk1;
     bool active;
     int unk2;
@@ -12,7 +19,7 @@ log_fd log_fds[0x20]; //.bsp.bss:e6047e68
 int active_log_fds; //.bsp.bss:e6047e64
 
 //.bsp.text: e600e35c
-int log_open(const char* handle, int unk1, int unk2) {
+int log_open(const char* name, int unk1, int unk2) {
     IOSError err;
 
     if (log_mutex < 0) {
@@ -25,7 +32,7 @@ int log_open(const char* handle, int unk1, int unk2) {
 
     err = IOS_WaitSemaphore(log_mutex, 0);
     if (err != IOS_ERROR_OK) {
-        log_debug_printf("LOG ERROR: log_open(%s, %d, ...) failed\n", name, unk);
+        log_debug_printf("LOG ERROR: log_open(%s, %d, ...) failed\n", name, unk1);
         return -1;
     }
 
@@ -47,9 +54,9 @@ int log_open(const char* handle, int unk1, int unk2) {
         }
     }
 
-    if (index == -1) {
+    if (ndx == -1) {
         IOS_SignalSemaphore(log_mutex);
-        log_debug_printf("LOG ERROR: log_open(%s, %d, ...) failed\n", name, unk);
+        log_debug_printf("LOG ERROR: log_open(%s, %d, ...) failed\n", name, unk1);
         return -1;
     }
 
@@ -62,5 +69,5 @@ int log_open(const char* handle, int unk1, int unk2) {
     }
 
     IOS_SignalSemaphore(log_mutex);
-    return index;
+    return ndx;
 }

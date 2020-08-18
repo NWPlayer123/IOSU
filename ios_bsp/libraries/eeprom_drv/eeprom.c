@@ -1,3 +1,6 @@
+#include <string.h>
+
+#include <eeprom.h>
 #include "eeprom_internal.h"
 static eepromCtx eepromContexts[NUM_EEPROMS];
 
@@ -8,9 +11,9 @@ IOSError eepromDrvReadWord(int eeprom_ndx, uint8_t addr, uint16_t* data) {
         return IOS_ERROR_MAX;
     }
 
-    eepromCtx* ctx = eepromContexts[eeprom_ndx];
+    eepromCtx* ctx = &eepromContexts[eeprom_ndx];
     if (ctx->status != EEPROM_STATUS_OPEN) {
-        return IOS_ERROR_NOT_READY;
+        return IOS_ERROR_NOTREADY;
     }
 
     uint32_t cmd = 0x600 | addr; //READ
@@ -39,7 +42,7 @@ IOSError eepromDrvWriteWord(int eeprom_ndx, uint8_t addr, uint16_t data) {
         return IOS_ERROR_MAX;
     }
 
-    eepromCtx* ctx = eepromContexts[eeprom_ndx];
+    eepromCtx* ctx = &eepromContexts[eeprom_ndx];
     if (ctx->status != EEPROM_STATUS_OPEN) {
         return IOS_ERROR_NOTREADY;
     }
@@ -59,7 +62,7 @@ IOSError eepromDrvSetWriteControl(int eeprom_ndx, EEPROM_WRITE_CONTROL control) 
         return IOS_ERROR_MAX;
     }
 
-    eepromCtx* ctx = eepromContexts[eeprom_ndx];
+    eepromCtx* ctx = &eepromContexts[eeprom_ndx];
     if (ctx->status != EEPROM_STATUS_OPEN) {
         return IOS_ERROR_NOTREADY;
     }
@@ -90,7 +93,7 @@ IOSError eepromDrvSetWriteControl(int eeprom_ndx, EEPROM_WRITE_CONTROL control) 
 IOSError eepromDrvInit(int eeprom_ndx) {
     IOSError err = IOS_ERROR_OK;
 
-    eepromCtx* ctx = eepromContexts[eeprom_ndx];
+    eepromCtx* ctx = &eepromContexts[eeprom_ndx];
     if (!(eeprom_ndx < NUM_EEPROMS)) {
         return IOS_ERROR_MAX;
     }
@@ -107,14 +110,14 @@ IOSError eepromDrvInit(int eeprom_ndx) {
 
 //.text:e600ce0c
 IOSError eepromDrvOpen(int eeprom_ndx) {
-    eepromCtx* ctx = eepromContexts[eeprom_ndx];
+    eepromCtx* ctx = &eepromContexts[eeprom_ndx];
     if (!(eeprom_ndx < NUM_EEPROMS)) {
         return IOS_ERROR_MAX;
     }
 
     if (ctx->status != EEPROM_STATUS_CLOSED &&
         ctx->status != EEPROM_STATUS_INITIALISED) {
-        return IOS_ERROR_NOT_READY;
+        return IOS_ERROR_NOTREADY;
     }
 
     eepromDrvSetCS(ctx, 0);
@@ -126,13 +129,13 @@ IOSError eepromDrvOpen(int eeprom_ndx) {
 }
 
 IOSError eepromDrvShutdown(int eeprom_ndx) {
-    eepromCtx* ctx = eepromContexts[eeprom_ndx];
+    eepromCtx* ctx = &eepromContexts[eeprom_ndx];
     if (!(eeprom_ndx < NUM_EEPROMS)) {
         return IOS_ERROR_MAX;
     }
 
     if (ctx->status != EEPROM_STATUS_OPEN) {
-        return IOS_ERROR_NOT_READY;
+        return IOS_ERROR_NOTREADY;
     }
 
     eepromDrvSetCS(ctx, 0);

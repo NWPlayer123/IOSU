@@ -1,4 +1,9 @@
-#include <eeprom_drv/eeprom.h>
+#include <bc.h>
+
+#include <string.h>
+
+#include <eeprom.h>
+#include <log.h>
 
 static int bc_log_handle = -1; //.data:e604696c
 static bool bc_initialised; //.bss:e60479d0
@@ -49,14 +54,14 @@ IOSError bcGet(BC_CONFIG* config) {
 
     memcpy(config, data, 0x28); //note sizeof(data) = 0x48
     if (config->version == 0) {
-        config->ddr3vendor = 0x5521; //"U!"
+        config->ddr3Vendor = 0x5521; //"U!"
     }
 
     bcStructSize *= 2; //yes, really
     crc32Reset();
     uint32_t crc = crc32Input(&data[2], bcStructSize - 2);
     //endian could be wrong here
-    if (crc != (data[0] << 16) | data[1]) {
+    if (crc != ((data[0] << 16) | data[1])) {
         return IOS_ERROR_INVALID;
     }
 

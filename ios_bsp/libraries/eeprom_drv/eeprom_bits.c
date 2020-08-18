@@ -1,3 +1,4 @@
+#include <bsp_entity.h>
 #include "eeprom_internal.h"
 
 IOSError eepromDrvSetSK(eepromCtx* ctx, int state) {
@@ -94,5 +95,25 @@ IOSError eepromDrvWaitForReady(eepromCtx* ctx) {
     eepromDrvFinishCommand(ctx, 2);
 
     if (timeout) return IOS_ERROR_FAIL_INTERNAL;
+    return IOS_ERROR_OK;
+}
+
+IOSError eepromDrvSendBits(eepromCtx* ctx, size_t size, uint32_t data) {
+    if (size > 32) {
+        return IOS_ERROR_INVALID;
+    }
+
+    //convert size to 0-based bit number
+    size--;
+
+    for (int i = size; i >= 0; i--) {
+        eepromDrvSetSK(ctx, 0);
+        eepromDrvSetCS(ctx, 1);
+        eepromDrvSetDO(ctx, (data >> i) & 1);
+        udelay(4);
+        eepromDrvSetSK(ctx, 1);
+        udelay(4);
+    }
+
     return IOS_ERROR_OK;
 }

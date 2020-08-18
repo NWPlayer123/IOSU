@@ -2,6 +2,8 @@
     5.5.x retail. TODO: other versions?
     Make sure to also update _syscalls.h */
 
+_syscall(IOS_GetCurrentProcessId, 0x5)
+_syscall(IOS_GetProcessName, 0x6)
 _syscall(IOS_CreateMessageQueue, 0xC)
 _syscall(IOS_ReceiveMessage, 0x10)
 _syscall(IOS_CreateCrossProcessHeap, 0x25)

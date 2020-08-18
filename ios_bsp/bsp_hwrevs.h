@@ -93,4 +93,8 @@ enum BSP_VARIANTS {
 //No known hardware
 #define BSP_IS_ID(hwver) (BSP_GET_VARIANT(hwver) == BSP_VARIANT_ID)
 
+BSP_RVAL bspMethodGetHardwareVersion(BSP_HARDWARE_VERSION *version);
+BSP_RVAL determineWoodBasedHardwareVersion(BSP_HARDWARE_VERSION* version, bool fullCheck);
+BSP_RVAL determineLatteBasedHardwareVersion(BSP_HARDWARE_VERSION* version);
+
 #endif //_BSP_HWREVS_H_

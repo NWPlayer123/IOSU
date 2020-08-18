@@ -1,6 +1,6 @@
 #pragma once
 
-#define REG_BIT(bit, val, width) (val << (dev * width))
+#define REG_BIT(bit, val, width) (val << (bit * width))
 
 // https://wiiubrew.org/wiki/Hardware/Latte_Registers#HW_IOPWRCTRL
 #define HW_IOPWRCTRL ((uint32_t*)0x0d8001dc)
@@ -26,19 +26,31 @@
 #define HW_IOSTRCTRL1 ((uint32_t*)0x0d8001e4)
     #define HW_IOSTRCTRL1_MASK 3
     #define HW_IOSTRCTRL1_SDIO(val) REG_BIT(7, val, HW_IOSTRCTRL1_MASK)
+    #define HW_IOSTRCTRL1_GPIO(val) REG_BIT()
 
 // https://wiibrew.org/wiki/Hardware/Hollywood_Registers#HW_AIPPROT
 #define HW_AIP_PROT ((uint32_t*)0x0d800070)
     #define HW_AIP_PROT_ENAHBIOPI REG_BIT(0, 1, 1)
 
+// https://wiibrew.org/wiki/Hardware/Hollywood_Registers#HW_CLOCKS
+#define HW_CLOCKS ((uint32_t*)0x0d800190)
+    #define HW_CLOCKS_FX    REG_BIT(0, 1, 1)
+    #define HW_CLOCKS_SPEED REG_BIT(1, 1, 1)
+
 // https://wiibrew.org/wiki/Hardware/Hollywood_Registers#HW_RESETS
 #define HW_RSTB ((uint32_t*)0x0d800194)
-    #define HW_RSTB_CPU  REG_BIT(4, 1, 1)
-    #define HW_SRSTB_CPU REG_BIT(5, 1, 1)
-    #define HW_RSTB_PI   REG_BIT(9, 1, 1)
+    #define HW_RSTB_CPU   REG_BIT(4, 1, 1)
+    #define HW_SRSTB_CPU  REG_BIT(5, 1, 1)
+    #define HW_RSTB_PI    REG_BIT(9, 1, 1)
+    #define HW_RSTB_IOEXI REG_BIT(16, 1, 1)
+    #define HW_RSTB_IOMEM REG_BIT(18, 1, 1)
+    #define HW_RSTB_IOPI  REG_BIT(19, 1, 1)
 
 #define LT_IOP2X ((uint32_t*)0x0d8005bc)
     #define LT_IOP2X_ENABLE 0x04
+
+#define LT_PLLSYS ((uint32_t*)0x0d8005ec)
+    #define LT_PLLSYS_HALFSPEED REG_BIT(0, 1, 1)
 
 #define LT_60XE_CFG ((uint32_t*)0x0d800640)
     #define LT_60XE_CFG_STREAMING REG_BIT(3, 1, 1)

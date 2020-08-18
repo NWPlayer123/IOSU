@@ -1,0 +1,3 @@
+[submodule "libraries/compiler-rt"]
+	path = libraries/libc/compiler-rt
+	url = https://github.com/QuarkTheAwesome/compiler-rt-be-aeabi
