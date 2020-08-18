@@ -46,6 +46,10 @@
     #define HW_RSTB_IOMEM REG_BIT(18, 1, 1)
     #define HW_RSTB_IOPI  REG_BIT(19, 1, 1)
 
+#define HW_CHIPREVID ((uint32_t*)0x0d800214)
+
+#define LT_CHIPREVID ((uint32_t*)0x0d8005a0)
+
 #define LT_IOP2X ((uint32_t*)0x0d8005bc)
     #define LT_IOP2X_ENABLE 0x04
 

@@ -5,6 +5,12 @@
 #ifndef _BSP_HWREVS_H_
 #define _BSP_HWREVS_H_
 
+#include <bsp_entity.h>
+#include <bc.h>
+
+#include <stdint.h>
+#include <stdbool.h>
+
 typedef enum BSP_HARDWARE_VERSION {
     BSP_HARDWARE_VERSION_BOLLYWOOD=0x20000001,
     BSP_HARDWARE_VERSION_BOLLYWOOD_PROD_FOR_WII=0x20100001,
@@ -105,5 +111,7 @@ typedef enum BSP_CONSOLE_TYPE {
     BSP_CONSOLE_TYPE_EV   = 4,
 } BSP_CONSOLE_TYPE;
 BSP_RVAL bspGetConsoleType(int32_t* consoleType);
+
+BSP_RVAL bspReadBoardConfig(BC_CONFIG* config);
 
 #endif //_BSP_HWREVS_H_

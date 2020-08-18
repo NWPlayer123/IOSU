@@ -1,6 +1,19 @@
 #include "bsp_hwrevs.h"
 
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+
 #include <bc.h>
+#include <bsp_entity.h>
+
+#include "latte/latte.h"
+
+#include "bsp_internal.h"
+#include "bsp_public_api.h"
+
+#include "entities/ppc/bsp_ppc.h"
+//#include "entities/cortado/bsp_cortado.h"
 
 /*  Something to do with getting the hardware version?
 *   .text:e600b62c
@@ -23,7 +36,7 @@ BSP_RVAL bspMethodGetHardwareVersion(BSP_HARDWARE_VERSION *version) {
 
         *version &= 0xFFFF0000;
 
-        ret = bspMethodReadEEBoardConfig(&bspBoardConfig);
+        ret = bspReadBoardConfig(&bspBoardConfig); //.text:e600bd0c
         if (ret != BSP_RVAL_OK) {
             *version |= BSP_VARIANT_EV_Y;
         } else {
@@ -109,7 +122,7 @@ BSP_RVAL determineLatteBasedHardwareVersion(BSP_HARDWARE_VERSION* version) {
     int ret;
 
     uint32_t lt_chiprev = *LT_CHIPREVID;
-    if (lt_chiprev & 0xFFFF0000 != 0xCAFE0000) {
+    if ((lt_chiprev & 0xFFFF0000) != 0xCAFE0000) {
         return BSP_RVAL_UNKNOWN_HARDWARE_VERSION;
     }
 
@@ -154,7 +167,7 @@ BSP_RVAL bspGetConsoleMask(int32_t* mask) {
             return BSP_RVAL_OK;
         }
 
-        *mask = 0x03000050
+        *mask = 0x03000050;
         return BSP_RVAL_OK;
     }
 
@@ -201,4 +214,23 @@ BSP_RVAL bspGetConsoleType(int32_t* consoleType) {
     }
 
     return BSP_RVAL_OK; //...ok, nintendo
+}
+
+//.text:e600bd0c
+BSP_RVAL bspReadBoardConfig(BC_CONFIG* config) {
+    IOSError err;
+
+    err = bcInit();
+    if (err != IOS_ERROR_OK) {
+        memset(config, 0, sizeof(*config));
+        return BSP_RVAL_DEVICE_ERROR;
+    }
+
+    err = bcGet(config);
+    if (err != IOS_ERROR_OK) {
+        memset(config, 0, sizeof(*config));
+        return BSP_RVAL_BOARD_CONFIG_INVALID;
+    }
+
+    return BSP_RVAL_OK;
 }

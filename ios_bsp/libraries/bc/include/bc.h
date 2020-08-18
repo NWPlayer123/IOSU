@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gctypes.h>
+#include <ios_api/ios.h>
 
 typedef struct BC_CONFIG {
     u32 crc;
@@ -34,3 +35,6 @@ typedef enum BC_CONSOLE_TYPE {
     BC_CONSOLE_TYPE_WUIH_DEV     = 8,
     BC_CONSOLE_TYPE_CAT_DEV_WUIH = 9,
 } BC_CONSOLE_TYPE;
+
+IOSError bcInit();
+IOSError bcGet(BC_CONFIG* config);
