@@ -1,15 +1,4 @@
-/*  Info largely from wiiubrew - thanks Hykem!
-    see https://wiiubrew.org/wiki/Hardware/Latte_Registers#LT_ASICREV_ACR
-    Info also from cafe2wii DWARF info - thanks Nintendo!
-*/
-#ifndef _BSP_HWREVS_H_
-#define _BSP_HWREVS_H_
-
-#include <bsp_entity.h>
-#include <bc.h>
-
-#include <stdint.h>
-#include <stdbool.h>
+#pragma once
 
 typedef enum BSP_HARDWARE_VERSION {
     BSP_HARDWARE_VERSION_BOLLYWOOD=0x20000001,
@@ -99,19 +88,8 @@ enum BSP_VARIANTS {
 //No known hardware
 #define BSP_IS_ID(hwver) (BSP_GET_VARIANT(hwver) == BSP_VARIANT_ID)
 
-BSP_RVAL bspMethodGetHardwareVersion(BSP_HARDWARE_VERSION *version);
-BSP_RVAL determineWoodBasedHardwareVersion(BSP_HARDWARE_VERSION* version, bool fullCheck);
-BSP_RVAL determineLatteBasedHardwareVersion(BSP_HARDWARE_VERSION* version);
-
-BSP_RVAL bspGetConsoleMask(int32_t* mask);
-
 typedef enum BSP_CONSOLE_TYPE {
     BSP_CONSOLE_TYPE_CAFE = 2,
     BSP_CONSOLE_TYPE_CAT  = 3,
     BSP_CONSOLE_TYPE_EV   = 4,
 } BSP_CONSOLE_TYPE;
-BSP_RVAL bspGetConsoleType(int32_t* consoleType);
-
-BSP_RVAL bspReadBoardConfig(BC_CONFIG* config);
-
-#endif //_BSP_HWREVS_H_

@@ -9,9 +9,10 @@
 
 #include "latte/latte.h"
 
+#include <bsp.h>
 #include <bsp_entity.h>
-#include "bsp_public_api.h"
-#include "bsp_hwrevs.h"
+#include <bsp_hwrevs.h>
+#include "bsp_hwrev.h"
 
 typedef struct fd_t {
     bool active;
@@ -222,26 +223,26 @@ void hello() {
 BSP_RVAL bspInstall() {
     BSP_RVAL ret /*r4|r5*/;
     ret = bspInitEssential();
-    ret |= bspResetInstall(); //sub_E600580C
-    ret |= bspRAMInstall(); //.text:E6006BA4
-    ret |= bspDIInstall(); //.text:E6006A3C
-    ret |= bspPPCInstall(); //.text:E6007D5C
-    ret |= bspSDIOInstall(); //.text:E6004E68
-    ret |= bspVIInstall(); //.text:E6003198
-    ret |= bspAIInstall(); //.text:E6000F80
-    ret |= bspUSBInstall(); //.text:E6002800
-    ret |= bspSIInstall(); //.text:E60068CC
-    ret |= bspCortadoInstall(); //.text:E6005D5C
-    ret |= bspSATAInstall(); //.text:E6008C0C
-    ret |= bspFLAInstall(); //.text:E6009584
-    ret |= bspSMCInstall(); //.text:E60095C4
-    ret |= bspRTCInstall(); //.text:E60099CC
-    ret |= bspCCRHInstall(); //.text:E6009D68
-    ret |= bspWIFIInstall(); //.text:E600A2B0
-    ret |= bspGFXInstall(); //.text:E60040D8
-    ret |= bspEEInstall(); //.text:E600A398
-    ret |= bspDDRPerfInstall(); //.text:E600B0D8
-    ret |= bspDISPLAYInstall(); //.text:E600B864
+//    ret |= bspResetInstall(); //sub_E600580C
+//    ret |= bspRAMInstall(); //.text:E6006BA4
+//    ret |= bspDIInstall(); //.text:E6006A3C
+//    ret |= bspPPCInstall(); //.text:E6007D5C
+//    ret |= bspSDIOInstall(); //.text:E6004E68
+//    ret |= bspVIInstall(); //.text:E6003198
+//    ret |= bspAIInstall(); //.text:E6000F80
+//    ret |= bspUSBInstall(); //.text:E6002800
+//    ret |= bspSIInstall(); //.text:E60068CC
+//    ret |= bspCortadoInstall(); //.text:E6005D5C
+//    ret |= bspSATAInstall(); //.text:E6008C0C
+//    ret |= bspFLAInstall(); //.text:E6009584
+//    ret |= bspSMCInstall(); //.text:E60095C4
+//    ret |= bspRTCInstall(); //.text:E60099CC
+//    ret |= bspCCRHInstall(); //.text:E6009D68
+//    ret |= bspWIFIInstall(); //.text:E600A2B0
+//    ret |= bspGFXInstall(); //.text:E60040D8
+//    ret |= bspEEInstall(); //.text:E600A398
+//    ret |= bspDDRPerfInstall(); //.text:E600B0D8
+//    ret |= bspDISPLAYInstall(); //.text:E600B864
     return ret;
 }
 

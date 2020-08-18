@@ -1,17 +1,15 @@
-#include "bsp_hwrevs.h"
+#include "bsp_hwrev.h"
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
 
 #include <bc.h>
+#include <bsp.h>
 #include <bsp_entity.h>
 
-#include "latte/latte.h"
-
 #include "bsp_internal.h"
-#include "bsp_public_api.h"
-
+#include "latte/latte.h"
 #include "entities/ppc/bsp_ppc.h"
 //#include "entities/cortado/bsp_cortado.h"
 

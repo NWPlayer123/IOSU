@@ -1,5 +1,7 @@
 #pragma once
 
+#include <bsp.h>
+
 //TODO convert to hex and clean up
 typedef enum BSP_RVAL {
     BSP_RVAL_BOARD_CONFIG_INVALID=262144,

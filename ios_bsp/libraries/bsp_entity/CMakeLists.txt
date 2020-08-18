@@ -14,4 +14,4 @@ target_include_directories(bsp_entity
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(bsp_entity libc)
+target_link_libraries(bsp_entity ios::bsp libc)
