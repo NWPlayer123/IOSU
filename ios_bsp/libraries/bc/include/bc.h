@@ -22,3 +22,15 @@ typedef struct BC_CONFIG {
     u16 consoleType;
     u32 devicePresence; /* v4+ only */
 } BC_CONFIG;
+
+typedef enum BC_CONSOLE_TYPE {
+    BC_CONSOLE_TYPE_WUP          = 1,
+    BC_CONSOLE_TYPE_CAT_R        = 2,
+    BC_CONSOLE_TYPE_CAT_DEV      = 3,
+    BC_CONSOLE_TYPE_EV           = 4,
+    BC_CONSOLE_TYPE_CAT_I        = 5,
+    BC_CONSOLE_TYPE_ORCHESTRA_X  = 6,
+    BC_CONSOLE_TYPE_WUIH         = 7,
+    BC_CONSOLE_TYPE_WUIH_DEV     = 8,
+    BC_CONSOLE_TYPE_CAT_DEV_WUIH = 9,
+} BC_CONSOLE_TYPE;

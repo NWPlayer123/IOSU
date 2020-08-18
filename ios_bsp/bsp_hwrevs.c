@@ -1,5 +1,7 @@
 #include "bsp_hwrevs.h"
 
+#include <bc.h>
+
 /*  Something to do with getting the hardware version?
 *   .text:e600b62c
 */
@@ -136,4 +138,67 @@ BSP_RVAL determineLatteBasedHardwareVersion(BSP_HARDWARE_VERSION* version) {
             *version |= 0x26100000; //Latte B1x
             return BSP_RVAL_OK;
     }
+}
+
+BSP_RVAL bspGetConsoleMask(int32_t* mask) {
+    *mask = -1;
+
+    if (bspBoardConfig.size == 0) {
+        return BSP_RVAL_BOARD_CONFIG_INVALID;
+    }
+
+    if (bspBoardConfig.version < 4) {
+        if ((bspBoardConfig.boardType == 0x4354 /*CT*/) ||
+            (bspBoardConfig.boardType == 0x4556 /*EV*/)) {
+            *mask = 0x13000048;
+            return BSP_RVAL_OK;
+        }
+
+        *mask = 0x03000050
+        return BSP_RVAL_OK;
+    }
+
+    if (bspBoardConfig.consoleType == BC_CONSOLE_TYPE_CAT_DEV ||
+        bspBoardConfig.consoleType == BC_CONSOLE_TYPE_EV) {
+        *mask = 0x13000048;
+        return BSP_RVAL_OK;
+    }
+
+    if (bspBoardConfig.consoleType == 6) {
+        *mask = 0x23000050;
+        return BSP_RVAL_OK;
+    }
+
+    *mask = 0x03000050;
+    return BSP_RVAL_OK;
+}
+
+BSP_RVAL bspGetConsoleType(int32_t* consoleType) {
+    *consoleType = -1;
+
+    if (bspBoardConfig.size == 0) {
+        return BSP_RVAL_BOARD_CONFIG_INVALID;
+    }
+
+    if (bspBoardConfig.version > 3) {
+        *consoleType = (int32_t)bspBoardConfig.consoleType;
+        return BSP_RVAL_OK;
+    }
+
+    if (bspBoardConfig.boardType == 0x4354 /*CT*/) {
+        *consoleType = BSP_CONSOLE_TYPE_CAT;
+        return BSP_RVAL_OK;
+    }
+
+    if (bspBoardConfig.boardType == 0x4556 /*EV*/) {
+        *consoleType = BSP_CONSOLE_TYPE_EV;
+        return BSP_RVAL_OK;
+    }
+
+    if (bspBoardConfig.boardType == 0x4346 /*CF*/) {
+        *consoleType = BSP_CONSOLE_TYPE_CAFE;
+        return BSP_RVAL_OK;
+    }
+
+    return BSP_RVAL_OK; //...ok, nintendo
 }

@@ -25,6 +25,7 @@ int log_fd = -1; //.data:E6042000
 
 void hello();
 BSP_RVAL bspInstall();
+BSP_RVAL bspInitEssential();
 BSP_RVAL InitASICVersion(BSP_HARDWARE_VERSION* version);
 
 /*  .text:E6000000
@@ -119,7 +120,7 @@ void main() {
                     if (__builtin_bswap32(args->size) != 4) {
                         result = BSP_RVAL_SPECIFIED_SIZE_INVALID;
                     } else {
-                        result = sub_E6000668(inPtr, outPtr);
+                        result = bspGetEntityVersion((const char*)inPtr, (BSP_ENTITY_VERSION*)outPtr);
                     }
                 }
                 case BSP_IOCTL_GET_HARDWARE_VERSION: {
@@ -133,7 +134,7 @@ void main() {
                     if (__builtin_bswap32(args->size) != 4) {
                         result = BSP_RVAL_SPECIFIED_SIZE_INVALID;
                     } else {
-                        result = sub_E600B1A4(outPtr);
+                        result = bspGetConsoleMask((int32_t*)outPtr);
                     }
                 }
                 case BSP_IOCTL_METHOD_QUERY: {
@@ -155,7 +156,7 @@ void main() {
                     if (__builtin_bswap32(args->size) != 4) {
                         result = BSP_RVAL_SPECIFIED_SIZE_INVALID;
                     } else {
-                        result = sub_E600B270(outPtr);
+                        result = bspGetConsoleType((int32_t*)outPtr);
                     }
                 }
                 default: {
@@ -189,9 +190,9 @@ reply:
 
 report_err:
 #ifdef ACCURATE
-    sub_E600E264(log_fd, "main", "bsp_main.c", 0x97, "main() is exiting, ioserr %d, bsp err 0x%x\n", ioserr, bsperr);
+    log_fatal(log_fd, "main", "bsp_main.c", 0x97, "main() is exiting, ioserr %d, bsp err 0x%x\n", ioserr, bsperr);
 #else
-    sub_E600E264(log_fd, __FUNCTION__, __FILE__, __LINE__, "main() is exiting, ioserr %d, bsp err 0x%x\n", ioserr, bsperr);
+    log_fatal(log_fd, __FUNCTION__, __FILE__, __LINE__, "main() is exiting, ioserr %d, bsp err 0x%x\n", ioserr, bsperr);
 #endif
 }
 
@@ -220,7 +221,7 @@ void hello() {
 //.text:e6000d78
 BSP_RVAL bspInstall() {
     BSP_RVAL ret /*r4|r5*/;
-    ret = sub_E6000CC4();
+    ret = bspInitEssential();
     ret |= bspResetInstall(); //sub_E600580C
     ret |= bspRAMInstall(); //.text:E6006BA4
     ret |= bspDIInstall(); //.text:E6006A3C
@@ -254,7 +255,7 @@ BC_CONFIG bspBoardConfig; //.bss:E604798C
 /*  Some kind of Wood hardware init?
  *  .text:E6000CC4
  */
-int bspInitEssential() {
+BSP_RVAL bspInitEssential() {
     int error /*r4|r5*/;
 
     bspEntityCount = 0;

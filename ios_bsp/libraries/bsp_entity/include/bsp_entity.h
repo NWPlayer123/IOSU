@@ -43,3 +43,5 @@ BSP_RVAL bspInitInternal(const char* entityName, u32 instance, const char* attri
 
 BSP_RVAL bspMethodShutdown(const char* entityName, u32 instance, const char* attributeName, BSP_CLIENT_CREDENTIALS clientCredentials);
 BSP_RVAL bspShutdownInternal(const char* entityName, u32 instance, const char* attributeName);
+
+BSP_RVAL bspGetEntityVersion(const char* entityName, BSP_ENTITY_VERSION* version);

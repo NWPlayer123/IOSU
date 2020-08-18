@@ -1,3 +1,3 @@
 #pragma once
 
-extern BC_CONFIG bspEEBoardConfigData; //.bss:E604798C
+extern BC_CONFIG bspBoardConfig; //.bss:E604798C
