@@ -1,6 +1,9 @@
 #pragma once
 #include "bsp_hwrevs.h"
 
+#include <stdint.h>
+#include <stddef.h>
+
 typedef struct BSP_IOCTL_METHOD {
     char entityName[32];
     uint32_t instance; //+0x20
@@ -48,3 +51,11 @@ typedef struct BSP_PPC_PVR {
     uint16_t revision;
 } BSP_PPC_PVR;
 //sizeof(BSP_PPC_PVR) = 0x4
+
+typedef struct BSP_HARDWARE_INFO {
+    BSP_SYSTEM_CLOCK_INFO clock;
+    BSP_HARDWARE_VERSION hwver;
+} BSP_HARDWARE_INFO;
+//sizeof(BSP_HARDWARE_INFO) = 0xC
+
+extern BSP_HARDWARE_INFO bspHwInfo;

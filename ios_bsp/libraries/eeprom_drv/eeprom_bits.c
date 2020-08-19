@@ -1,3 +1,4 @@
+#include <delay.h>
 #include <bsp_entity.h>
 #include "eeprom_internal.h"
 

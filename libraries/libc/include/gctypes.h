@@ -13,3 +13,5 @@ typedef  int8_t s8;
 
 typedef unsigned long ulong;
 typedef unsigned int  uint;
+
+const static uint32_t UINT_MAX = 0xFFFFFFFF;

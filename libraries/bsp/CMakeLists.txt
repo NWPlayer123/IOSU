@@ -3,10 +3,7 @@ add_library(bsp_api
 )
 add_library(ios::bsp ALIAS bsp_api)
 
-target_compile_options(bsp_api
-    PRIVATE
-        -x assembler-with-cpp
-)
+target_link_libraries(bsp_api ios::api)
 
 target_include_directories(bsp_api
     PUBLIC

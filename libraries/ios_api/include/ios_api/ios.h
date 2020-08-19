@@ -100,3 +100,5 @@ IOSError IOS_SignalSemaphore(IOSSemaphore id);
 IOSError IOS_DestroySemaphore(IOSSemaphore id);
 
 void IOS_SetBSPReady();
+
+uint32_t IOS_GetUpTime(void);
