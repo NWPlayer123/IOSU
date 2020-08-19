@@ -40,7 +40,7 @@ void main() {
     ret = IOS_CreateCrossProcessHeap(0x10000); //UND #0x250, .text:E600FA44
     if (ret < IOS_ERROR_OK) {
     /*  Not 100% sure if this is a generic print or an error reporter */
-        log_debug_printf("BSP: IOS_CreateCrossProcessHeap ERROR, rval = %d\n", ret); //.text:E600EC28
+        printf("BSP: IOS_CreateCrossProcessHeap ERROR, rval = %d\n", ret); //.text:E600EC28
         return;
     }
 
@@ -215,7 +215,7 @@ void hello() {
 
     process = IOS_GetCurrentProcessId();
     IOS_GetProcessName(process,name);
-    log_debug_printf("%s: Built %s, Image Utilization %d%%.\n",name,build_date,0x25);
+    printf("%s: Built %s, Image Utilization %d%%.\n",name,build_date,0x25);
     return;
 }
 

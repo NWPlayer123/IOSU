@@ -1,5 +1,6 @@
 add_library(libc
     ${CMAKE_CURRENT_SOURCE_DIR}/string.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/sprintf.c
     ${CMAKE_CURRENT_SOURCE_DIR}/delay.c
 )
 add_library(libc::libc ALIAS libc)

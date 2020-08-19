@@ -11,6 +11,7 @@ Copyright (C) 2009      Haxx Enterprises <bushing@gmail.com>
 #define _STRING_H
 
 #include "gctypes.h"
+#include "_sprintf.h"
 
 size_t strlen(const char *);
 size_t strnlen(const char *, size_t);

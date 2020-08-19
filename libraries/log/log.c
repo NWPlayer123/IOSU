@@ -25,14 +25,14 @@ int log_open(const char* name, int unk1, int unk2) {
     if (log_mutex < 0) {
         log_mutex = IOS_CreateSemaphore(1, 1);
         if (log_mutex < 0) {
-            log_debug_printf("LOG ERROR: mutex init error!\n"); //.bsp.text:e600ec28
+            printf("LOG ERROR: mutex init error!\n"); //.bsp.text:e600ec28
             return -1;
         }
     }
 
     err = IOS_WaitSemaphore(log_mutex, 0);
     if (err != IOS_ERROR_OK) {
-        log_debug_printf("LOG ERROR: log_open(%s, %d, ...) failed\n", name, unk1);
+        printf("LOG ERROR: log_open(%s, %d, ...) failed\n", name, unk1);
         return -1;
     }
 
@@ -56,7 +56,7 @@ int log_open(const char* name, int unk1, int unk2) {
 
     if (ndx == -1) {
         IOS_SignalSemaphore(log_mutex);
-        log_debug_printf("LOG ERROR: log_open(%s, %d, ...) failed\n", name, unk1);
+        printf("LOG ERROR: log_open(%s, %d, ...) failed\n", name, unk1);
         return -1;
     }
 
