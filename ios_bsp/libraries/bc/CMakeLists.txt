@@ -14,4 +14,4 @@ target_include_directories(bc
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(bc libc log ios::eeprom_drv)
+target_link_libraries(bc libc log crc32 ios::eeprom_drv)

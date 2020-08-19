@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include <eeprom.h>
+#include <crc32.h>
 #include <log.h>
 
 static int bc_log_handle = -1; //.data:e604696c
