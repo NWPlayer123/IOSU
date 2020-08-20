@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stddef.h>
 
 #include <ios_api/ios.h>
 
@@ -70,4 +71,96 @@ int log_open(const char* name, int unk1, int unk2) {
 
     IOS_SignalSemaphore(log_mutex);
     return ndx;
+}
+
+/* .bsp.data:e6046980
+ */
+static int log_syslog_handle = IOS_ERROR_INVALID;
+
+IOSError log_print_syslog(const char* fmt, va_list ap, bool include_ts) {
+    if (log_syslog_handle < 0) {
+        log_syslog_handle = IOS_Open("/dev/syslog", 0);
+        if (log_syslog_handle < 0) {
+            return IOS_ERROR_INVALID;
+        }
+    }
+
+    char* str = IOS_HeapAlloc(0xcaff, 0x120);
+    if (str == NULL) {
+        return IOS_ERROR_INVALID;
+    }
+
+    int strOffset = 0;
+
+    if (include_ts) {
+    /*  TODO clean this up */
+        IOSTimerTicks uptime;
+        IOS_GetUpTime64(&uptime);
+        uint64_t msec = uptime / 1000ull;
+        uint64_t work = (msec & 0xFFFFFFFF) / 1000;
+        uint32_t sec = (int)work;
+        work /= 60;
+        uint32_t min = (int)work;
+        work /= 60;
+        uint32_t hrs = (int)work;
+
+        int ret = snprintf(str, 0x100, "%02d:%02d:%02d:%03d: ",
+            hrs - hrs/24*24, min - hrs*60, sec - min*60, (int)msec - sec*1000
+        );
+        if (ret >= 0) {
+            strOffset += ret;
+        }
+    }
+
+    int ret = vsnprintf(&str[strOffset], 0x100-strOffset, fmt, ap);
+    if (ret < 1) {
+        return IOS_ERROR_INVALID;
+    }
+    strOffset += ret;
+
+    IOSError err = IOS_Write(log_syslog_handle, str, strOffset);
+    IOS_HeapFree(0xcaff, str);
+
+    return err;
+}
+
+void _log_print_syslog_ts(const char* fmt, va_list ap) {
+    log_print_syslog(fmt, ap, true);
+}
+
+void log_print_syslog_ts(const char* fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    _log_print_syslog_ts(fmt, ap);
+    va_end(ap);
+}
+
+void log_fatal(int handle, const char* file, const char* function, int line, const char* message, ...) {
+    char msg[256];
+    memset(msg, 0, 256);
+
+    int msgOffset = 0;
+
+    log_fd* fd = log_get_fd(handle);
+    if (fd != NULL) {
+        msgOffset += snprintf(msg, 256, "%s ", fd->name);
+    }
+
+    int tid = IOS_GetCurrentThreadId();
+    IOSProcessId pid = IOS_GetCurrentProcessId();
+    msgOffset += snprintf(&msg[msgOffset], 256 - msgOffset,
+        "ASSERT: file=%s, function=%s(), line=%d, processID=%d, threadID=%d, ",
+        file, function, line, pid, tid
+    );
+
+    va_list ap;
+    va_start(ap, message);
+    vsnprintf(&msg[msgOffset], 256 - msgOffset, message, ap);
+    va_end(ap);
+
+    printf("\n%s\n", msg);
+    log_print_syslog_ts("\n%s\n", msg);
+    BSP_SleepTimer(100000);
+
+    log_panic("\n%s\n", msg);
 }

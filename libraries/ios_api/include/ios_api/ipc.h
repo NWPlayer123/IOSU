@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "ios.h"
 
 typedef uint32_t IOSMessageCommand;
 enum IOSMessageCommand {

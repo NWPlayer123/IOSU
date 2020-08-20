@@ -82,6 +82,7 @@ enum IOSProcessId {
 
 IOSError IOS_GetCurrentProcessId(void);
 IOSError IOS_GetProcessName(IOSProcessId process, char * buffer);
+IOSError IOS_GetCurrentThreadId(void);
 
 typedef int32_t IOSMessageQueue;
 IOSMessageQueue IOS_CreateMessageQueue(void* mem, int num_messages);
@@ -101,4 +102,13 @@ IOSError IOS_DestroySemaphore(IOSSemaphore id);
 
 void IOS_SetBSPReady();
 
+typedef uint64_t IOSTimerTicks;
 uint32_t IOS_GetUpTime(void);
+IOSError IOS_GetUpTime64(IOSTimerTicks* uptime);
+
+typedef int32_t IOS_HeapId;
+void * IOS_HeapAlloc(IOS_HeapId id, uint32_t size);
+IOSError IOS_HeapFree(IOS_HeapId id, void * ptr);
+
+IOSError IOS_Open(const char* device, int mode);
+IOSError IOS_Write(int handle, void* buffer, size_t length);
