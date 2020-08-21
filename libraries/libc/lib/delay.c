@@ -24,3 +24,23 @@ void udelay(uint32_t usec) {
         now = IOS_GetUpTime();
     } while (now - start < ticks);
 }
+
+//.bsp.text:e600f5d0
+IOSError delay_ticks(uint32_t ticks) {
+    IOSMessage msg_mem;
+    IOSMessageQueue queue = IOS_CreateMessageQueue(&msg_mem, 1);
+    if (queue < 0) return queue;
+
+    IOSTimer timer = IOS_CreateTimer(ticks, 0, queue, (IOSMessage*)0xbabecafe);
+    if (timer < 0) {
+        IOS_DestroyMessageQueue(queue);
+        return timer;
+    }
+
+    IOSMessage* msg;
+    IOS_ReceiveMessage(queue, &msg, 0);
+
+    IOS_DestroyTimer(timer);
+    IOS_DestroyMessageQueue(queue);
+    return IOS_ERROR_OK;
+}

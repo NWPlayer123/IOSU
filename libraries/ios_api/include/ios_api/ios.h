@@ -86,6 +86,7 @@ IOSError IOS_GetCurrentThreadId(void);
 
 typedef int32_t IOSMessageQueue;
 IOSMessageQueue IOS_CreateMessageQueue(void* mem, int num_messages);
+IOSError IOS_DestroyMessageQueue(IOSMessageQueue id);
 IOSError IOS_ReceiveMessage(IOSMessageQueue queue, IOSMessage** msg, int flags);
 IOSError IOS_ResourceReply(IOSMessage* msg, int32_t reply);
 IOSError IOS_RegisterResourceManager(const char* device, IOSMessageQueue queue);
@@ -102,6 +103,10 @@ IOSError IOS_DestroySemaphore(IOSSemaphore id);
 
 void IOS_SetBSPReady();
 
+typedef int32_t IOSTimer;
+IOSError IOS_CreateTimer(uint32_t delay,uint32_t period,IOSMessageQueue queue,IOSMessage* message);
+IOSError IOS_DestroyTimer(IOSTimer timer);
+
 typedef uint64_t IOSTimerTicks;
 uint32_t IOS_GetUpTime(void);
 IOSError IOS_GetUpTime64(IOSTimerTicks* uptime);
@@ -112,3 +117,5 @@ IOSError IOS_HeapFree(IOS_HeapId id, void * ptr);
 
 IOSError IOS_Open(const char* device, int mode);
 IOSError IOS_Write(int handle, void* buffer, size_t length);
+
+void _Noreturn IOS_Panic(const char* msg, size_t msg_size);

@@ -2,6 +2,8 @@
 
 #define REG_BIT(bit, val, width) (val << (bit * width))
 
+#define HW_TIMER ((uint32_t*)0x0d800010)
+
 // https://wiiubrew.org/wiki/Hardware/Latte_Registers#HW_IOPWRCTRL
 #define HW_IOPWRCTRL ((uint32_t*)0x0d8001dc)
     #define HW_IOPWRCTRL_MASK 2

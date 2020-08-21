@@ -19,6 +19,13 @@ typedef struct log_fd {
 log_fd log_fds[0x20]; //.bsp.bss:e6047e68
 int active_log_fds; //.bsp.bss:e6047e64
 
+log_fd* log_get_fd(int handle) {
+    if (handle < 0x20 && log_fds[handle].active) {
+        return &log_fds[handle];
+    }
+    return NULL;
+}
+
 //.bsp.text: e600e35c
 int log_open(const char* name, int unk1, int unk2) {
     IOSError err;
@@ -124,6 +131,18 @@ IOSError log_print_syslog(const char* fmt, va_list ap, bool include_ts) {
     return err;
 }
 
+void _Noreturn log_panic(const char* fmt, ...) {
+    char msg[128];
+    memset(msg, 0, sizeof(msg));
+
+    va_list ap;
+    va_start(ap, fmt);
+    int msg_size = vsnprintf(msg, sizeof(msg), fmt, ap);
+    va_end(ap);
+
+    IOS_Panic(msg, msg_size);
+}
+
 void _log_print_syslog_ts(const char* fmt, va_list ap) {
     log_print_syslog(fmt, ap, true);
 }
@@ -160,7 +179,7 @@ void log_fatal(int handle, const char* file, const char* function, int line, con
 
     printf("\n%s\n", msg);
     log_print_syslog_ts("\n%s\n", msg);
-    BSP_SleepTimer(100000);
+    delay_ticks(100000);
 
     log_panic("\n%s\n", msg);
 }
